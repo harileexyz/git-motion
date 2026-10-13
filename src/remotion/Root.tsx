@@ -149,7 +149,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="RepoOverview"
         component={RepoReel as any}
-        durationInFrames={30 * 30}
+        durationInFrames={1020}
         fps={30}
         width={1920}
         height={1080}
@@ -163,7 +163,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="ModuleSpotlight"
         component={ModuleReel as any}
-        durationInFrames={25 * 30}
+        durationInFrames={625}
         fps={30}
         width={1920}
         height={1080}
@@ -178,7 +178,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="VerticalOverview"
         component={RepoReel as any}
-        durationInFrames={30 * 30}
+        durationInFrames={1020}
         fps={30}
         width={1080}
         height={1920}
@@ -192,7 +192,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="VerticalModule"
         component={ModuleReel as any}
-        durationInFrames={25 * 30}
+        durationInFrames={625}
         fps={30}
         width={1080}
         height={1920}

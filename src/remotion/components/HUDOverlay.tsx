@@ -23,22 +23,25 @@ export const HUDOverlay: React.FC<HUDOverlayProps> = ({
   progress,
 }) => {
   return (
-    <div className="absolute inset-0 pointer-events-none p-12 flex flex-col justify-between font-mono">
-      {/* Subtle background tech grid */}
-      <div
-        className="absolute inset-0 opacity-[0.04]"
-        style={{
-          backgroundImage: `radial-gradient(${theme.textPrimary} 1px, transparent 1px)`,
-          backgroundSize: "40px 40px",
-        }}
-      />
+    <div className="absolute inset-0 pointer-events-none p-10 flex flex-col justify-between font-mono">
+      {/* Top 3px Progress Line (Pinned to very top edge, zero overlap with captions) */}
+      <div className="absolute top-0 left-0 right-0 h-1 bg-white/10 overflow-hidden">
+        <div
+          className="h-full transition-all duration-75"
+          style={{
+            width: `${Math.min(100, Math.max(0, progress * 100))}%`,
+            backgroundColor: theme.accent,
+            boxShadow: `0 0 16px ${theme.accent}`,
+          }}
+        />
+      </div>
 
-      {/* Top Bar */}
+      {/* Top Header Bar */}
       <div className="relative z-10 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div
             className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg shadow-lg border border-white/10"
-            style={{ backgroundColor: theme.canvasCard, color: theme.accent }}
+            style={{ backgroundColor: "#0b1628", color: theme.accent }}
           >
             GM
           </div>
@@ -61,7 +64,7 @@ export const HUDOverlay: React.FC<HUDOverlayProps> = ({
               <span>•</span>
               <span>{totalCommits} commits</span>
               <span>•</span>
-              <span>60fps architecture trace</span>
+              <span className="text-cyan-400 font-semibold">{Math.round(progress * 100)}% complete</span>
             </div>
           </div>
         </div>
@@ -70,8 +73,8 @@ export const HUDOverlay: React.FC<HUDOverlayProps> = ({
         <div
           className="px-5 py-2.5 rounded-xl border backdrop-blur-md flex items-center gap-3 shadow-2xl"
           style={{
-            backgroundColor: `${theme.canvasCard}cc`,
-            borderColor: "rgba(255, 255, 255, 0.1)",
+            backgroundColor: "rgba(11, 22, 40, 0.85)",
+            borderColor: "rgba(255, 255, 255, 0.12)",
           }}
         >
           <div
@@ -84,24 +87,6 @@ export const HUDOverlay: React.FC<HUDOverlayProps> = ({
             </div>
             <div className="text-[10px] text-white/60">{currentSceneSubtitle}</div>
           </div>
-        </div>
-      </div>
-
-      {/* Bottom Progress Bar */}
-      <div className="relative z-10 flex flex-col gap-2">
-        <div className="flex justify-between items-center text-xs text-white/40">
-          <span>git-motion reel</span>
-          <span>{Math.round(progress * 100)}%</span>
-        </div>
-        <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden">
-          <div
-            className="h-full rounded-full transition-all duration-75"
-            style={{
-              width: `${Math.min(100, Math.max(0, progress * 100))}%`,
-              backgroundColor: theme.accent,
-              boxShadow: `0 0 12px ${theme.accent}`,
-            }}
-          />
         </div>
       </div>
     </div>

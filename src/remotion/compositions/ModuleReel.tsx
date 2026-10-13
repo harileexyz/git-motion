@@ -44,53 +44,54 @@ export const ModuleReel: React.FC<ModuleReelProps> = ({
 
   const progress = frame / durationInFrames;
 
-  // 4 Phased Walkthrough
+  // Exact step frame boundaries matching measured audio durations + natural pauses:
+  // Phase 1: 0 -> 175 frames (audio: 161 frames)
+  // Phase 2: 175 -> 325 frames (audio: 138 frames)
+  // Phase 3: 325 -> 465 frames (audio: 124 frames)
+  // Phase 4: 465 -> 625 frames (audio: 136 frames)
   let activePhase = 0;
-  let sceneTitle = `Module Spotlight: [${moduleInfo.name}]`;
+  let sceneTitle = `Looking at: [${moduleInfo.name}]`;
   let captionText =
-    "This is the subsystem boundary spotlight. On the left, we map all inbound consumers that import this module.";
-  let highlightWords = ["subsystem", "boundary", "inbound", "consumers", "module"];
-  let accentColor = "#c4ff78";
+    "This shows just one part of your project. On the left, you can see which other folders use this code.";
+  let highlightWords = ["one", "part", "project", "left", "folders", "use", "code"];
+  let accentColor = "#c4ff78"; // Semicolon Mint
 
-  if (frame >= 190 && frame < 400) {
+  if (frame >= 175 && frame < 325) {
     activePhase = 1;
-    sceneTitle = "Internal Component Topology";
+    sceneTitle = "Files Inside This Folder";
     captionText =
-      "In the center, we inspect the module's internal file anatomy, language breakdown, and total lines of verified code.";
-    highlightWords = ["internal", "anatomy", "language", "lines", "verified"];
-    accentColor = "#00f3ff";
-  } else if (frame >= 400 && frame < 590) {
+      "Here in the middle are all the files inside this folder, so you can see where everything lives.";
+    highlightWords = ["middle", "files", "folder", "where", "everything", "lives"];
+    accentColor = "#00f3ff"; // Cyan
+  } else if (frame >= 325 && frame < 465) {
     activePhase = 2;
-    sceneTitle = "Core Logic & Handlers";
+    sceneTitle = "The Main Code File";
     captionText =
-      "Here is the core handler logic, orchestrating state transformations within this architectural boundary.";
-    highlightWords = ["core", "handler", "state", "transformations", "boundary"];
-    accentColor = "#ff967d";
-  } else if (frame >= 590) {
+      "Here is the main code file that actually does the work for this part of your app.";
+    highlightWords = ["main", "code", "file", "work", "app"];
+    accentColor = "#ff967d"; // Semicolon Coral
+  } else if (frame >= 465) {
     activePhase = 3;
-    sceneTitle = "Subsystem Health Scorecard";
+    sceneTitle = "Outside Tools It Needs";
     captionText =
-      "On the right, we track outbound dependencies required by this module to complete execution.";
-    highlightWords = ["outbound", "dependencies", "complete", "execution"];
-    accentColor = "#c4ff78";
+      "And on the right, you see what outside tools and libraries this folder needs to run.";
+    highlightWords = ["right", "outside", "tools", "libraries", "needs", "run"];
+    accentColor = "#c4ff78"; // Semicolon Mint
   }
 
   return (
     <AbsoluteFill style={{ backgroundColor: "#0b1628" }}>
-      {/* Background Soft Cyber Ambient Bed */}
-      <Audio src={staticFile("audio/ambient-cyber.wav")} volume={0.18} />
-
-      {/* Semicolon-Studio Kokoro af_heart Voice Narration Sequences for Module Spotlight */}
-      <Sequence from={0} durationInFrames={190}>
+      {/* PURE Clean Semicolon Kokoro af_heart Voice Narration (Zero background noise) */}
+      <Sequence from={0} durationInFrames={175}>
         <Audio src={staticFile("audio/voice/module_step1.wav")} volume={1.0} />
       </Sequence>
-      <Sequence from={190} durationInFrames={210}>
+      <Sequence from={175} durationInFrames={150}>
         <Audio src={staticFile("audio/voice/module_step2.wav")} volume={1.0} />
       </Sequence>
-      <Sequence from={400} durationInFrames={190}>
+      <Sequence from={325} durationInFrames={140}>
         <Audio src={staticFile("audio/voice/module_step3.wav")} volume={1.0} />
       </Sequence>
-      <Sequence from={590} durationInFrames={160}>
+      <Sequence from={465} durationInFrames={160}>
         <Audio src={staticFile("audio/voice/module_step4.wav")} volume={1.0} />
       </Sequence>
 
@@ -122,9 +123,9 @@ export const ModuleReel: React.FC<ModuleReelProps> = ({
         accentColor={accentColor}
       />
 
-      {/* Futuristic HUD */}
+      {/* Futuristic HUD with top-edge progress bar (NO bottom overlap) */}
       <HUDOverlay
-        theme={theme}
+        theme={{ ...theme, accent: accentColor }}
         repoName={analysis.name}
         branch={analysis.branch}
         totalCommits={analysis.totalCommits}

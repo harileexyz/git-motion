@@ -142,7 +142,7 @@ export const App: React.FC = () => {
 
   const compWidth = aspectRatio === "16:9" ? 1920 : 1080;
   const compHeight = aspectRatio === "16:9" ? 1080 : 1920;
-  const durationFrames = mode === "overview" ? 30 * 30 : 25 * 30;
+  const durationFrames = mode === "overview" ? 1020 : 625;
 
   return (
     <div className="flex flex-col h-screen bg-[#090d16] text-slate-100 font-sans overflow-hidden">

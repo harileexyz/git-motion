@@ -20,43 +20,44 @@ class FloatSpeedSession:
         inputs['speed'] = np.array([self.speed], dtype=np.float32)
         return self.session.run(outputs, inputs)
 
+# Simple, friendly, plain-English scripts (no sophisticated jargon)
 SCRIPTS = [
     {
         "id": "step1.wav",
-        "text": "When you run git-motion, execution begins right at your terminal or browser, reading your local workspace without sending any code to the cloud."
+        "text": "When you run git-motion, it starts right on your computer. You can use your terminal or open the web studio. Nothing is uploaded to the cloud."
     },
     {
         "id": "step2.wav",
-        "text": "The local engine instantly inspects your files, mapping import statements across TypeScript, Python, and Go, while calculating your Git commit churn."
+        "text": "Next, it quickly looks through all the files in your project. It sees which files connect to each other, and checks your Git history to find the most active files."
     },
     {
         "id": "step3.wav",
-        "text": "Next, the layout engine clusters your files into four architectural tiers, tracing inbound consumers and outbound dependencies."
+        "text": "Then, it organizes your code into four simple parts: your entry points, your backend server, the core engine, and the video renderer."
     },
     {
         "id": "step4.wav",
-        "text": "Finally, Remotion composes the timeline at sixty frames per second, exporting a verified video ready to embed directly in your documentation."
+        "text": "Finally, it turns this blueprint into a smooth video that shows how your project works. You can save it and put it right on your GitHub page."
     },
     {
         "id": "module_step1.wav",
-        "text": "This is the subsystem boundary spotlight. On the left, we map all inbound consumers that import this module."
+        "text": "This shows just one part of your project. On the left, you can see which other folders use this code."
     },
     {
         "id": "module_step2.wav",
-        "text": "In the center, we inspect the module's internal file anatomy, language breakdown, and total lines of verified code."
+        "text": "Here in the middle are all the files inside this folder, so you can see where everything lives."
     },
     {
         "id": "module_step3.wav",
-        "text": "Here is the core handler logic, orchestrating state transformations within this architectural boundary."
+        "text": "Here is the main code file that actually does the work for this part of your app."
     },
     {
         "id": "module_step4.wav",
-        "text": "On the right, we track outbound dependencies required by this module to complete execution."
+        "text": "And on the right, you see what outside tools and libraries this folder needs to run."
     }
 ]
 
 def main():
-    print("🎙️ Generating studio-quality narration using Kokoro af_heart at speed 1.12...")
+    print("🎙️ Generating simple plain-English Kokoro af_heart narration...")
     onnx_path = os.path.join(MODEL_DIR, "kokoro-v1.0.onnx")
     voices_path = os.path.join(MODEL_DIR, "voices-v1.0.bin")
 
@@ -68,9 +69,11 @@ def main():
         out_wav = os.path.join(OUT_DIR, item["id"])
         samples, rate = engine.create(text, voice="af_heart", speed=1.12, lang="en-us")
         sf.write(out_wav, samples, rate)
-        print(f"  ✓ {item['id']} generated ({len(samples)} samples @ {rate}Hz)")
+        duration = len(samples) / rate
+        frames = int(round(duration * 30))
+        print(f"  ✓ {item['id']}: {duration:.2f}s ({frames} frames @ 30fps)")
 
-    print("\n✓ All Kokoro af_heart narration files successfully generated!")
+    print("\n✓ All simple narration files successfully generated!")
 
 if __name__ == "__main__":
     main()
