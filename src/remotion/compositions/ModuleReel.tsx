@@ -44,35 +44,35 @@ export const ModuleReel: React.FC<ModuleReelProps> = ({
 
   const progress = frame / durationInFrames;
 
-  // Exact step frame boundaries matching measured audio durations + natural pauses:
-  // Phase 1: 0 -> 175 frames (audio: 161 frames)
-  // Phase 2: 175 -> 325 frames (audio: 138 frames)
-  // Phase 3: 325 -> 465 frames (audio: 124 frames)
-  // Phase 4: 465 -> 625 frames (audio: 136 frames)
+  // Exact step frame boundaries matching measured Kokoro audio durations:
+  // Phase 1: 0 -> 175 frames (module_step1.mp3: 161 frames)
+  // Phase 2: 175 -> 325 frames (module_step2.mp3: 138 frames)
+  // Phase 3: 325 -> 465 frames (module_step3.mp3: 124 frames)
+  // Phase 4: 465 -> 625 frames (module_step4.mp3: 136 frames)
   let activePhase = 0;
-  let sceneTitle = `Looking at: [${moduleInfo.name}]`;
+  let sceneTitle = `1. Ingestion: [${moduleInfo.name}]`;
   let captionText =
     "This shows just one part of your project. On the left, you can see which other folders use this code.";
   let highlightWords = ["one", "part", "project", "left", "folders", "use", "code"];
-  let accentColor = "#c4ff78"; // Semicolon Mint
+  let accentColor = "#38bdf8"; // Sky Blue
 
-  if (frame >= 260 && frame < 500) {
+  if (frame >= 175 && frame < 325) {
     activePhase = 1;
-    sceneTitle = "Files Inside This Folder";
+    sceneTitle = "2. Under-The-Hood Execution";
     captionText =
       "Here in the middle are all the files inside this folder, so you can see where everything lives.";
     highlightWords = ["middle", "files", "folder", "where", "everything", "lives"];
     accentColor = "#00f3ff"; // Cyan
-  } else if (frame >= 500 && frame < 700) {
+  } else if (frame >= 325 && frame < 465) {
     activePhase = 2;
-    sceneTitle = "The Main Code File";
+    sceneTitle = "3. Core Code Processing";
     captionText =
       "Here is the main code file that actually does the work for this part of your app.";
     highlightWords = ["main", "code", "file", "work", "app"];
     accentColor = "#ff967d"; // Semicolon Coral
-  } else if (frame >= 700) {
+  } else if (frame >= 465) {
     activePhase = 3;
-    sceneTitle = "Outside Tools It Needs";
+    sceneTitle = "4. Delivering Outputs";
     captionText =
       "And on the right, you see what outside tools and libraries this folder needs to run.";
     highlightWords = ["right", "outside", "tools", "libraries", "needs", "run"];
@@ -82,16 +82,16 @@ export const ModuleReel: React.FC<ModuleReelProps> = ({
   return (
     <AbsoluteFill style={{ backgroundColor: "#0b1628" }}>
       {/* Semicolon Kokoro af_heart Voice Narration (Universal MP3, instant decode) */}
-      <Sequence from={0} durationInFrames={260}>
+      <Sequence from={0} durationInFrames={175}>
         <Audio src={staticFile("audio/voice/module_step1.mp3")} volume={1.0} />
       </Sequence>
-      <Sequence from={260} durationInFrames={240}>
+      <Sequence from={175} durationInFrames={150}>
         <Audio src={staticFile("audio/voice/module_step2.mp3")} volume={1.0} />
       </Sequence>
-      <Sequence from={500} durationInFrames={200}>
+      <Sequence from={325} durationInFrames={140}>
         <Audio src={staticFile("audio/voice/module_step3.mp3")} volume={1.0} />
       </Sequence>
-      <Sequence from={700} durationInFrames={200}>
+      <Sequence from={465} durationInFrames={160}>
         <Audio src={staticFile("audio/voice/module_step4.mp3")} volume={1.0} />
       </Sequence>
 

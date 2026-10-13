@@ -150,7 +150,7 @@ export const App: React.FC = () => {
 
   const compWidth = aspectRatio === "16:9" ? 1920 : 1080;
   const compHeight = aspectRatio === "16:9" ? 1080 : 1920;
-  const durationFrames = mode === "overview" ? 1060 : 900;
+  const durationFrames = mode === "overview" ? 1020 : 625;
 
   return (
     <div className="flex flex-col h-screen bg-[#090d16] text-slate-100 font-sans overflow-hidden">
@@ -417,6 +417,7 @@ export const App: React.FC = () => {
                 >
                   {mode === "overview" ? (
                     <Player
+                      key="overview-player"
                       component={RepoReel}
                       inputProps={{
                         analysis,
@@ -436,6 +437,7 @@ export const App: React.FC = () => {
                     />
                   ) : (
                     <Player
+                      key={`module-player-${selectedModuleId}`}
                       component={ModuleReel}
                       inputProps={{
                         analysis,

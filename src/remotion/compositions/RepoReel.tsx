@@ -21,11 +21,11 @@ export const RepoReel: React.FC<RepoReelProps> = ({
 
   const progress = frame / durationInFrames;
 
-  // Exact step frame boundaries matching measured mp3 audio durations:
-  // Step 1: 0 -> 290 frames (step1.mp3: 276 frames)
-  // Step 2: 290 -> 550 frames (step2.mp3: 247 frames)
-  // Step 3: 550 -> 800 frames (step3.mp3: 238 frames)
-  // Step 4: 800 -> 1060 frames (step4.mp3: 233 frames)
+  // Exact step frame boundaries matching measured Kokoro audio durations:
+  // Step 1: 0 -> 245 frames (step1.mp3: 232 frames)
+  // Step 2: 245 -> 520 frames (step2.mp3: 263 frames)
+  // Step 3: 520 -> 760 frames (step3.mp3: 225 frames)
+  // Step 4: 760 -> 1020 frames (step4.mp3: 233 frames)
   let activeStep = 0;
   let sceneTitle = "1. Starting Point";
   let sceneSubtitle = "Runs on your laptop";
@@ -34,7 +34,7 @@ export const RepoReel: React.FC<RepoReelProps> = ({
   let highlightWords = ["git-motion", "computer", "terminal", "web", "studio", "cloud"];
   let accentColor = "#38bdf8"; // Sky Blue
 
-  if (frame >= 290 && frame < 550) {
+  if (frame >= 245 && frame < 520) {
     activeStep = 1;
     sceneTitle = "2. Scanning Your Files";
     sceneSubtitle = "Reads imports & Git churn";
@@ -42,7 +42,7 @@ export const RepoReel: React.FC<RepoReelProps> = ({
       "Next, it quickly looks through all the files in your project. It sees which files connect to each other, and checks your Git history to find the most active files.";
     highlightWords = ["quickly", "files", "project", "connect", "Git", "history", "active"];
     accentColor = "#00f3ff"; // Cyan
-  } else if (frame >= 550 && frame < 800) {
+  } else if (frame >= 520 && frame < 760) {
     activeStep = 2;
     sceneTitle = "3. Organizing The Code";
     sceneSubtitle = "Four simple groups";
@@ -50,7 +50,7 @@ export const RepoReel: React.FC<RepoReelProps> = ({
       "Then, it organizes your code into four simple parts: your entry points, your backend server, the core engine, and the video renderer.";
     highlightWords = ["organizes", "four", "simple", "parts", "entry", "points", "backend", "engine", "video"];
     accentColor = "#ff967d"; // Coral
-  } else if (frame >= 800) {
+  } else if (frame >= 760) {
     activeStep = 3;
     sceneTitle = "4. Creating The Video";
     sceneSubtitle = "Ready for your GitHub README";
@@ -61,7 +61,7 @@ export const RepoReel: React.FC<RepoReelProps> = ({
   }
 
   // Outro opacity
-  const outroOpacity = interpolate(frame, [980, 1030], [0, 1], {
+  const outroOpacity = interpolate(frame, [880, 940], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -69,16 +69,16 @@ export const RepoReel: React.FC<RepoReelProps> = ({
   return (
     <AbsoluteFill style={{ backgroundColor: "#0b1628" }}>
       {/* Semicolon Kokoro af_heart Voice Narration (Universal MP3, instant decode) */}
-      <Sequence from={0} durationInFrames={290}>
+      <Sequence from={0} durationInFrames={245}>
         <Audio src={staticFile("audio/voice/step1.mp3")} volume={1.0} />
       </Sequence>
-      <Sequence from={290} durationInFrames={260}>
+      <Sequence from={245} durationInFrames={275}>
         <Audio src={staticFile("audio/voice/step2.mp3")} volume={1.0} />
       </Sequence>
-      <Sequence from={550} durationInFrames={250}>
+      <Sequence from={520} durationInFrames={240}>
         <Audio src={staticFile("audio/voice/step3.mp3")} volume={1.0} />
       </Sequence>
-      <Sequence from={800} durationInFrames={260}>
+      <Sequence from={760} durationInFrames={260}>
         <Audio src={staticFile("audio/voice/step4.mp3")} volume={1.0} />
       </Sequence>
 
