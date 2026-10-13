@@ -1,5 +1,5 @@
 import React from "react";
-import { AbsoluteFill, useCurrentFrame, useVideoConfig, Audio, staticFile } from "remotion";
+import { AbsoluteFill, useCurrentFrame, useVideoConfig, Audio, Sequence, staticFile } from "remotion";
 import { RepoAnalysis, ThemePreset } from "../../core/types";
 import { THEMES } from "../themes";
 import { ModuleBoundaryView } from "../components/ModuleBoundaryView";
@@ -64,8 +64,22 @@ export const ModuleReel: React.FC<ModuleReelProps> = ({
 
   return (
     <AbsoluteFill style={{ backgroundColor: theme.background }}>
-      {/* Background Cyber Audio Soundtrack */}
-      <Audio src={staticFile("audio/ambient-cyber.wav")} volume={0.6} />
+      {/* Background Soft Cyber Ambient Bed */}
+      <Audio src={staticFile("audio/ambient-cyber.wav")} volume={0.2} />
+
+      {/* Voiceover Narration Sequences for Module Spotlight */}
+      <Sequence from={0} durationInFrames={190}>
+        <Audio src={staticFile("audio/voice/module_step1.wav")} volume={1.0} />
+      </Sequence>
+      <Sequence from={200} durationInFrames={210}>
+        <Audio src={staticFile("audio/voice/module_step2.wav")} volume={1.0} />
+      </Sequence>
+      <Sequence from={420} durationInFrames={190}>
+        <Audio src={staticFile("audio/voice/module_step3.wav")} volume={1.0} />
+      </Sequence>
+      <Sequence from={620} durationInFrames={130}>
+        <Audio src={staticFile("audio/voice/module_step4.wav")} volume={1.0} />
+      </Sequence>
       {/* Background radial beacon */}
       <div
         className="absolute w-[800px] h-[600px] rounded-full blur-[160px] pointer-events-none opacity-20"

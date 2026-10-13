@@ -1,5 +1,5 @@
 import React from "react";
-import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, Audio, staticFile } from "remotion";
+import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, Audio, Sequence, staticFile } from "remotion";
 import { RepoAnalysis, ThemePreset } from "../../core/types";
 import { THEMES } from "../themes";
 import { buildStructuredArchitecture } from "../../core/architecture";
@@ -54,8 +54,22 @@ export const RepoReel: React.FC<RepoReelProps> = ({
 
   return (
     <AbsoluteFill style={{ backgroundColor: theme.background }}>
-      {/* Background Cyber Audio Soundtrack */}
-      <Audio src={staticFile("audio/ambient-cyber.wav")} volume={0.6} />
+      {/* Background Soft Cyber Ambient Bed (20% volume) */}
+      <Audio src={staticFile("audio/ambient-cyber.wav")} volume={0.2} />
+
+      {/* Voiceover Narration Sequences (100% volume) */}
+      <Sequence from={0} durationInFrames={210}>
+        <Audio src={staticFile("audio/voice/step1.wav")} volume={1.0} />
+      </Sequence>
+      <Sequence from={220} durationInFrames={210}>
+        <Audio src={staticFile("audio/voice/step2.wav")} volume={1.0} />
+      </Sequence>
+      <Sequence from={450} durationInFrames={210}>
+        <Audio src={staticFile("audio/voice/step3.wav")} volume={1.0} />
+      </Sequence>
+      <Sequence from={680} durationInFrames={200}>
+        <Audio src={staticFile("audio/voice/step4.wav")} volume={1.0} />
+      </Sequence>
 
       {/* Dynamic Background Ambient Light */}
       <div
