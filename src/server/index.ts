@@ -2,10 +2,14 @@ import express from "express";
 import cors from "cors";
 import path from "path";
 import fs from "fs";
+import { fileURLToPath } from "url";
 import { scanRepository } from "./analyzer";
 import { analyzeGitRepo, enrichFilesWithGit } from "./git";
 import { renderVideoToFile } from "./renderer";
 import { RepoAnalysis } from "../core/types";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export interface ServerOptions {
   port?: number;
@@ -103,6 +107,21 @@ export function createServer(options: ServerOptions = {}) {
       res.status(500).json({ error: err.message });
     }
   });
+
+  // Serve static Studio frontend if built
+  const candidateDists = [
+    path.resolve(process.cwd(), "dist"),
+    path.resolve(__dirname, "../../dist"),
+    path.resolve(__dirname, ".."),
+  ];
+  const distPath = candidateDists.find((p) => fs.existsSync(path.join(p, "index.html")));
+  if (distPath) {
+    app.use(express.static(distPath));
+    app.get("*", (req, res, next) => {
+      if (req.path.startsWith("/api")) return next();
+      res.sendFile(path.join(distPath, "index.html"));
+    });
+  }
 
   return { app, port, repoPath };
 }

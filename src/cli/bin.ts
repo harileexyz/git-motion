@@ -32,23 +32,21 @@ program
     const cwd = process.cwd();
     console.log(pc.gray(`  Scanning repository at: ${pc.white(cwd)}`));
 
-    // Spin up local API server
-    const apiPort = 4322;
-    const { app } = createServer({ port: apiPort, repoPath: cwd });
-    app.listen(apiPort, () => {
-      console.log(pc.green(`  ✓ Analysis API running at http://localhost:${apiPort}`));
+    const port = parseInt(options.port, 10) || 4321;
+    const { app } = createServer({ port, repoPath: cwd });
+    
+    app.listen(port, async () => {
+      const studioUrl = `http://localhost:${port}`;
+      console.log(pc.green(`  ✓ git-motion studio running at ${pc.bold(pc.underline(studioUrl))}`));
+      console.log();
+      console.log(pc.gray("  Press Ctrl+C to stop.\n"));
+
+      if (options.open !== false) {
+        try {
+          await open(studioUrl);
+        } catch {}
+      }
     });
-
-    const studioUrl = `http://localhost:${options.port}`;
-    console.log(pc.cyan(`  ✓ Studio preview ready at ${pc.bold(pc.underline(studioUrl))}`));
-    console.log();
-    console.log(pc.gray("  Press Ctrl+C to stop.\n"));
-
-    if (options.open !== false) {
-      try {
-        await open(studioUrl);
-      } catch {}
-    }
   });
 
 // Headless Render command
