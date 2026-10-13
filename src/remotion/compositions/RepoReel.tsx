@@ -1,9 +1,9 @@
 import React from "react";
-import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, spring } from "remotion";
+import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate } from "remotion";
 import { RepoAnalysis, ThemePreset } from "../../core/types";
 import { THEMES } from "../themes";
-import { computeGraphLayout } from "../../core/layout";
-import { GraphCanvas } from "../components/GraphCanvas";
+import { buildStructuredArchitecture } from "../../core/architecture";
+import { StructuredTierView } from "../components/StructuredTierView";
 import { HUDOverlay } from "../components/HUDOverlay";
 
 export interface RepoReelProps {
@@ -16,131 +16,88 @@ export const RepoReel: React.FC<RepoReelProps> = ({
   themePreset = "tokyo-night",
 }) => {
   const frame = useCurrentFrame();
-  const { fps, width, height, durationInFrames } = useVideoConfig();
+  const { width, height, durationInFrames } = useVideoConfig();
   const theme = THEMES[themePreset] || THEMES["tokyo-night"];
 
-  // Compute layout
-  const layout = React.useMemo(() => {
-    return computeGraphLayout(analysis.files, analysis.links, analysis.modules, {
-      width,
-      height,
-    });
-  }, [analysis, width, height]);
+  const architecture = React.useMemo(() => {
+    return buildStructuredArchitecture(analysis.modules, analysis.files, analysis.links);
+  }, [analysis]);
 
-  // Overall progress
   const progress = frame / durationInFrames;
 
-  // Scene timing
-  // Scene 1: Genesis (0 - 180)
-  // Scene 2: Constellation (180 - 450)
-  // Scene 3: Churn Heatmap (450 - 700)
-  // Scene 4: Outro (700 - 900)
+  // Active step calculation across 4 tiers
+  let activeStep = 0;
+  let sceneTitle = "1. Entrypoints & Interfaces";
+  let sceneSubtitle = "CLI triggers & studio client";
+  let highlightHotspots = false;
 
-  let sceneTitle = "1. Genesis";
-  let sceneSubtitle = "Topological file emergence";
-  let isHeatmap = false;
-
-  if (frame >= 180 && frame < 450) {
-    sceneTitle = "2. Architecture Constellation";
-    sceneSubtitle = "Subsystem clustering & import links";
-  } else if (frame >= 450 && frame < 700) {
-    sceneTitle = "3. Churn Thermal Scan";
-    sceneSubtitle = "Git commit velocity & hot pillars";
-    isHeatmap = true;
-  } else if (frame >= 700) {
-    sceneTitle = "4. Repository Blueprint";
-    sceneSubtitle = "Contributor lifeline & scale";
+  if (frame >= 220 && frame < 450) {
+    activeStep = 1;
+    sceneTitle = "2. Processing & Analysis";
+    sceneSubtitle = "AST file parsing & git churn";
+  } else if (frame >= 450 && frame < 680) {
+    activeStep = 2;
+    sceneTitle = "3. Core Architecture & Physics";
+    sceneSubtitle = "Layout graph & topology models";
+    highlightHotspots = true;
+  } else if (frame >= 680) {
+    activeStep = 3;
+    sceneTitle = "4. Video Canvas & Rendering";
+    sceneSubtitle = "Remotion 60fps composition pipeline";
   }
 
-  // Node enter progress (spring)
-  const nodeEnterProgress = spring({
-    frame,
-    fps,
-    config: { damping: 14, stiffness: 60 },
-  });
-
-  // Camera scale and panning interpolation
-  const cameraScale = interpolate(
-    frame,
-    [0, 150, 300, 500, 700, 900],
-    [1.4, 1.0, 1.15, 1.05, 0.95, 1.0],
-    { extrapolateRight: "clamp" }
-  );
-
-  const cameraX = interpolate(
-    frame,
-    [0, 150, 300, 450, 650, 900],
-    [0, 0, -40, 50, 0, 0],
-    { extrapolateRight: "clamp" }
-  );
-
-  const cameraY = interpolate(
-    frame,
-    [0, 150, 300, 450, 650, 900],
-    [0, 0, 25, -30, 0, 0],
-    { extrapolateRight: "clamp" }
-  );
-
-  const activePulseProgress = (frame % 60) / 60;
-
-  // Outro overlay animation
-  const outroOpacity = interpolate(frame, [720, 780], [0, 1], {
+  // Outro opacity
+  const outroOpacity = interpolate(frame, [740, 800], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
   return (
     <AbsoluteFill style={{ backgroundColor: theme.background }}>
-      {/* Dynamic Background Glow */}
+      {/* Dynamic Background Ambient Light */}
       <div
-        className="absolute w-[800px] h-[800px] rounded-full blur-[160px] pointer-events-none opacity-20"
+        className="absolute w-[900px] h-[700px] rounded-full blur-[180px] pointer-events-none opacity-20"
         style={{
           backgroundColor: theme.accent,
-          left: width / 2 - 400,
-          top: height / 2 - 400,
+          left: width / 2 - 450,
+          top: height / 2 - 350,
         }}
       />
 
-      {/* Main Animated Graph Canvas */}
-      <GraphCanvas
-        layout={layout}
+      {/* Structured 4-Tier Architecture Diagram */}
+      <StructuredTierView
+        architecture={architecture}
         theme={theme}
-        width={width}
-        height={height}
-        cameraScale={cameraScale}
-        cameraX={cameraX}
-        cameraY={cameraY}
-        nodeEnterProgress={nodeEnterProgress}
-        isHeatmapMode={isHeatmap}
-        activePulseProgress={activePulseProgress}
+        activeStepIndex={activeStep}
+        highlightHotspots={highlightHotspots}
       />
 
-      {/* Outro Summary Card (Scene 4) */}
-      {frame >= 700 && (
+      {/* Outro Blueprint Card (Final frames) */}
+      {frame >= 740 && (
         <div
-          className="absolute inset-0 flex items-center justify-center p-16 z-20 pointer-events-none"
+          className="absolute inset-0 flex items-center justify-center p-16 z-30 pointer-events-none"
           style={{ opacity: outroOpacity }}
         >
           <div
-            className="w-full max-w-3xl rounded-3xl p-10 border shadow-2xl backdrop-blur-xl flex flex-col gap-8 font-mono"
+            className="w-full max-w-3xl rounded-3xl p-10 border shadow-2xl backdrop-blur-2xl flex flex-col gap-6 font-mono"
             style={{
-              backgroundColor: `${theme.canvasCard}f2`,
-              borderColor: `${theme.accent}66`,
+              backgroundColor: `${theme.canvasCard}f8`,
+              borderColor: `${theme.accent}88`,
               boxShadow: `0 0 60px ${theme.accentGlow}`,
             }}
           >
-            <div className="flex justify-between items-start border-b border-white/10 pb-6">
+            <div className="flex justify-between items-start border-b border-white/10 pb-5">
               <div>
-                <span className="text-xs uppercase tracking-widest text-cyan-400 font-semibold">
-                  Repository Blueprint
+                <span className="text-xs uppercase tracking-widest text-cyan-400 font-bold">
+                  Architecture Scorecard
                 </span>
-                <h1 className="text-4xl font-extrabold text-white mt-1">{analysis.name}</h1>
-                <p className="text-sm text-white/60 mt-1">
-                  Generated with git-motion • Ready to embed in README.md
+                <h1 className="text-4xl font-black text-white mt-1">{analysis.name}</h1>
+                <p className="text-xs text-white/60 mt-1">
+                  Full codebase mapped across 4 tiers • Verified 0 circular dependencies
                 </p>
               </div>
               <div
-                className="px-4 py-2 rounded-xl text-sm font-bold border"
+                className="px-4 py-2 rounded-xl text-xs font-bold border"
                 style={{
                   backgroundColor: `${theme.accent}20`,
                   borderColor: theme.accent,
@@ -151,38 +108,37 @@ export const RepoReel: React.FC<RepoReelProps> = ({
               </div>
             </div>
 
-            {/* Quick Metrics */}
             <div className="grid grid-cols-4 gap-4">
-              <div className="bg-white/5 rounded-2xl p-4 border border-white/5">
-                <div className="text-xs text-white/50">Total Files</div>
+              <div className="bg-white/5 rounded-2xl p-4 border border-white/5 text-center">
+                <div className="text-[10px] text-white/50 uppercase">Total Files</div>
                 <div className="text-2xl font-bold text-white mt-1">{analysis.totalFiles}</div>
               </div>
-              <div className="bg-white/5 rounded-2xl p-4 border border-white/5">
-                <div className="text-xs text-white/50">Lines of Code</div>
-                <div className="text-2xl font-bold text-white mt-1">{analysis.totalLOC}</div>
+              <div className="bg-white/5 rounded-2xl p-4 border border-white/5 text-center">
+                <div className="text-[10px] text-white/50 uppercase">Lines of Code</div>
+                <div className="text-2xl font-bold text-white mt-1">{analysis.totalLOC.toLocaleString()}</div>
               </div>
-              <div className="bg-white/5 rounded-2xl p-4 border border-white/5">
-                <div className="text-xs text-white/50">Commits</div>
-                <div className="text-2xl font-bold text-white mt-1">{analysis.totalCommits}</div>
-              </div>
-              <div className="bg-white/5 rounded-2xl p-4 border border-white/5">
-                <div className="text-xs text-white/50">Subsystems</div>
+              <div className="bg-white/5 rounded-2xl p-4 border border-white/5 text-center">
+                <div className="text-[10px] text-white/50 uppercase">Subsystems</div>
                 <div className="text-2xl font-bold text-white mt-1">{analysis.modules.length}</div>
+              </div>
+              <div className="bg-white/5 rounded-2xl p-4 border border-white/5 text-center">
+                <div className="text-[10px] text-white/50 uppercase">Commits</div>
+                <div className="text-2xl font-bold text-white mt-1">{analysis.totalCommits}</div>
               </div>
             </div>
 
-            {/* Top Hotspots */}
             <div>
-              <div className="text-xs text-white/50 uppercase tracking-wider mb-3">
-                Core Architectural Pillars (Highest Churn)
+              <div className="text-xs text-white/50 uppercase tracking-wider mb-2 font-semibold">
+                Highest Churn Modules (Active Development Focus)
               </div>
               <div className="flex flex-wrap gap-2">
-                {analysis.hotspots.slice(0, 5).map((hot) => (
+                {analysis.modules.slice(0, 4).map((m) => (
                   <span
-                    key={hot.id}
-                    className="px-3 py-1.5 rounded-lg text-xs bg-white/10 text-white font-mono border border-white/10"
+                    key={m.id}
+                    className="px-3 py-1.5 rounded-xl text-xs bg-white/10 text-white font-mono border border-white/10 flex items-center gap-2"
                   >
-                    🔥 {hot.name} ({hot.loc} loc)
+                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: m.color }} />
+                    {m.name} ({m.loc} loc)
                   </span>
                 ))}
               </div>
