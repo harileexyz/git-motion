@@ -1,5 +1,5 @@
 import React from "react";
-import { AbsoluteFill, useCurrentFrame, useVideoConfig } from "remotion";
+import { AbsoluteFill, useCurrentFrame, useVideoConfig, Audio, staticFile } from "remotion";
 import { RepoAnalysis, ThemePreset } from "../../core/types";
 import { THEMES } from "../themes";
 import { ModuleBoundaryView } from "../components/ModuleBoundaryView";
@@ -64,6 +64,8 @@ export const ModuleReel: React.FC<ModuleReelProps> = ({
 
   return (
     <AbsoluteFill style={{ backgroundColor: theme.background }}>
+      {/* Background Cyber Audio Soundtrack */}
+      <Audio src={staticFile("audio/ambient-cyber.wav")} volume={0.6} />
       {/* Background radial beacon */}
       <div
         className="absolute w-[800px] h-[600px] rounded-full blur-[160px] pointer-events-none opacity-20"

@@ -14,12 +14,16 @@ import {
   RefreshCw,
   Sliders,
   CheckCircle,
-  ExternalLink,
+  Copy,
+  Check,
+  Code2,
+  Volume2,
 } from "lucide-react";
 import { RepoAnalysis, ThemePreset } from "../core/types";
 import { RepoReel } from "../remotion/compositions/RepoReel";
 import { ModuleReel } from "../remotion/compositions/ModuleReel";
-import { THEMES } from "../remotion/themes";
+import { buildStructuredArchitecture } from "../core/architecture";
+import { generateRepoMermaid, generateModuleMermaid } from "../core/mermaid";
 
 export const App: React.FC = () => {
   const [analysis, setAnalysis] = useState<RepoAnalysis | null>(null);
@@ -31,6 +35,8 @@ export const App: React.FC = () => {
   const [aspectRatio, setAspectRatio] = useState<"16:9" | "9:16">("16:9");
   const [isExporting, setIsExporting] = useState(false);
   const [exportMessage, setExportMessage] = useState<string | null>(null);
+  const [viewTab, setViewTab] = useState<"video" | "mermaid">("video");
+  const [copiedMermaid, setCopiedMermaid] = useState(false);
 
   // Fetch analysis from local API server
   const loadAnalysis = async () => {
@@ -69,6 +75,25 @@ export const App: React.FC = () => {
     if (!analysis) return null;
     return analysis.modules.find((m) => m.id === selectedModuleId) || analysis.modules[0] || null;
   }, [analysis, selectedModuleId]);
+
+  // Generate Mermaid markdown
+  const mermaidMarkdown = useMemo(() => {
+    if (!analysis) return "";
+    if (mode === "overview") {
+      const arch = buildStructuredArchitecture(analysis.modules, analysis.files, analysis.links);
+      return generateRepoMermaid(arch);
+    } else if (activeModule) {
+      return generateModuleMermaid(activeModule);
+    }
+    return "";
+  }, [analysis, mode, activeModule]);
+
+  const handleCopyMermaid = () => {
+    if (!mermaidMarkdown) return;
+    navigator.clipboard.writeText(mermaidMarkdown);
+    setCopiedMermaid(true);
+    setTimeout(() => setCopiedMermaid(false), 2000);
+  };
 
   // Trigger MP4 export via local backend
   const handleExport = async () => {
@@ -140,6 +165,35 @@ export const App: React.FC = () => {
 
           <div className="h-4 w-px bg-slate-800" />
 
+          {/* View Tab Switcher: Video Reel vs Mermaid Diagram */}
+          <div className="flex items-center bg-slate-900 border border-slate-800 rounded-xl p-1 text-xs">
+            <button
+              onClick={() => setViewTab("video")}
+              className={`px-3 py-1.5 rounded-lg font-semibold flex items-center gap-2 transition ${
+                viewTab === "video"
+                  ? "bg-cyan-500 text-black shadow-md shadow-cyan-500/20"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <Film className="w-3.5 h-3.5" />
+              <span>Animated Reel</span>
+              <Volume2 className="w-3 h-3 opacity-60" />
+            </button>
+            <button
+              onClick={() => setViewTab("mermaid")}
+              className={`px-3 py-1.5 rounded-lg font-semibold flex items-center gap-2 transition ${
+                viewTab === "mermaid"
+                  ? "bg-cyan-500 text-black shadow-md shadow-cyan-500/20"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <Code2 className="w-3.5 h-3.5" />
+              <span>Mermaid Diagram</span>
+            </button>
+          </div>
+
+          <div className="h-4 w-px bg-slate-800" />
+
           {/* Repo metadata pill */}
           {analysis && (
             <div className="flex items-center gap-3 text-xs font-mono text-slate-400">
@@ -155,8 +209,6 @@ export const App: React.FC = () => {
               <span>{analysis.totalFiles} files</span>
               <span>•</span>
               <span>{analysis.totalLOC.toLocaleString()} LOC</span>
-              <span>•</span>
-              <span>{analysis.totalCommits} commits</span>
             </div>
           )}
         </div>
@@ -209,8 +261,8 @@ export const App: React.FC = () => {
               <div className="flex items-center gap-2.5">
                 <Film className="w-4 h-4 text-cyan-400" />
                 <div>
-                  <div className="font-semibold text-white">Full Repository Reel</div>
-                  <div className="text-[10px] text-slate-400">Genesis & Macro Architecture</div>
+                  <div className="font-semibold text-white">Full Repository View</div>
+                  <div className="text-[10px] text-slate-400">4-Tier System Architecture</div>
                 </div>
               </div>
               {mode === "overview" && <Sparkles className="w-3.5 h-3.5 text-cyan-400" />}
@@ -278,60 +330,105 @@ export const App: React.FC = () => {
           </div>
         </aside>
 
-        {/* Center Canvas: Live Remotion Video Player */}
+        {/* Center Stage: Live Remotion Video Player OR Mermaid Diagram */}
         <main className="flex-1 bg-[#070a10] flex flex-col items-center justify-center p-8 overflow-hidden relative">
           {analysis ? (
-            <div className="flex flex-col items-center justify-center w-full max-w-5xl">
-              {/* Player Frame */}
-              <div
-                className="w-full relative rounded-2xl overflow-hidden border border-slate-800 shadow-2xl bg-black flex items-center justify-center"
-                style={{
-                  aspectRatio: aspectRatio === "16:9" ? "16/9" : "9/16",
-                  maxHeight: aspectRatio === "16:9" ? "650px" : "680px",
-                }}
-              >
-                {mode === "overview" ? (
-                  <Player
-                    component={RepoReel}
-                    inputProps={{
-                      analysis,
-                      themePreset: theme,
-                    }}
-                    durationInFrames={durationFrames}
-                    compositionWidth={compWidth}
-                    compositionHeight={compHeight}
-                    fps={30}
-                    controls
-                    loop
-                    className="w-full h-full object-contain"
-                  />
-                ) : (
-                  <Player
-                    component={ModuleReel}
-                    inputProps={{
-                      analysis,
-                      moduleId: selectedModuleId || analysis.modules[0]?.id || "core",
-                      themePreset: theme,
-                    }}
-                    durationInFrames={durationFrames}
-                    compositionWidth={compWidth}
-                    compositionHeight={compHeight}
-                    fps={30}
-                    controls
-                    loop
-                    className="w-full h-full object-contain"
-                  />
+            viewTab === "video" ? (
+              <div className="flex flex-col items-center justify-center w-full max-w-5xl">
+                {/* Player Frame */}
+                <div
+                  className="w-full relative rounded-2xl overflow-hidden border border-slate-800 shadow-2xl bg-black flex items-center justify-center"
+                  style={{
+                    aspectRatio: aspectRatio === "16:9" ? "16/9" : "9/16",
+                    maxHeight: aspectRatio === "16:9" ? "650px" : "680px",
+                  }}
+                >
+                  {mode === "overview" ? (
+                    <Player
+                      component={RepoReel}
+                      inputProps={{
+                        analysis,
+                        themePreset: theme,
+                      }}
+                      durationInFrames={durationFrames}
+                      compositionWidth={compWidth}
+                      compositionHeight={compHeight}
+                      fps={30}
+                      controls
+                      loop
+                      className="w-full h-full object-contain"
+                    />
+                  ) : (
+                    <Player
+                      component={ModuleReel}
+                      inputProps={{
+                        analysis,
+                        moduleId: selectedModuleId || analysis.modules[0]?.id || "core",
+                        themePreset: theme,
+                      }}
+                      durationInFrames={durationFrames}
+                      compositionWidth={compWidth}
+                      compositionHeight={compHeight}
+                      fps={30}
+                      controls
+                      loop
+                      className="w-full h-full object-contain"
+                    />
+                  )}
+                </div>
+
+                {/* Status Toast */}
+                {exportMessage && (
+                  <div className="mt-4 px-4 py-2 rounded-xl bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 text-xs font-mono flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-cyan-400" />
+                    {exportMessage}
+                  </div>
                 )}
               </div>
+            ) : (
+              /* Mermaid Architecture Diagram View */
+              <div className="w-full max-w-4xl h-full flex flex-col justify-between py-4">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                      <Code2 className="w-5 h-5 text-cyan-400" />
+                      Mermaid Architecture Flowchart
+                    </h2>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      {mode === "overview"
+                        ? "Full 4-tier system flowchart ready to paste into README.md"
+                        : `Subsystem boundary diagram for [${activeModule?.name || "module"}]`}
+                    </p>
+                  </div>
 
-              {/* Status Toast */}
-              {exportMessage && (
-                <div className="mt-4 px-4 py-2 rounded-xl bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 text-xs font-mono flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-cyan-400" />
-                  {exportMessage}
+                  <button
+                    onClick={handleCopyMermaid}
+                    className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-white flex items-center gap-2 shadow-lg transition"
+                  >
+                    {copiedMermaid ? (
+                      <>
+                        <Check className="w-4 h-4 text-emerald-400" />
+                        <span className="text-emerald-300">Copied to Clipboard!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-4 h-4 text-cyan-400" />
+                        <span>Copy Mermaid Code</span>
+                      </>
+                    )}
+                  </button>
                 </div>
-              )}
-            </div>
+
+                <div className="flex-1 bg-slate-950 border border-slate-800 rounded-2xl p-6 overflow-auto font-mono text-xs text-slate-300 selection:bg-cyan-500/30">
+                  <pre className="whitespace-pre">{mermaidMarkdown}</pre>
+                </div>
+
+                <div className="mt-4 p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-xs text-slate-400 flex items-center justify-between">
+                  <span>💡 Embed this directly into GitHub issues, PRs, or docs:</span>
+                  <code className="text-cyan-400 font-mono text-[11px]">```mermaid ... ```</code>
+                </div>
+              </div>
+            )
           ) : (
             <div className="text-center font-mono text-sm text-slate-500 flex flex-col items-center gap-3">
               <RefreshCw className="w-6 h-6 animate-spin text-cyan-400" />
@@ -346,8 +443,17 @@ export const App: React.FC = () => {
           <div className="space-y-4">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
               <Sliders className="w-3.5 h-3.5 text-cyan-400" />
-              Styling & Canvas
+              Styling & Audio
             </span>
+
+            {/* Audio Indicator */}
+            <div className="p-3 rounded-xl bg-cyan-950/40 border border-cyan-800/40 flex items-center gap-3 text-xs text-cyan-300 font-mono">
+              <Volume2 className="w-4 h-4 text-cyan-400 animate-pulse" />
+              <div>
+                <div className="font-bold">Ambient Cyber Audio</div>
+                <div className="text-[10px] text-cyan-400/70">Synced with step transitions</div>
+              </div>
+            </div>
 
             {/* Theme Preset */}
             <div>
@@ -450,21 +556,6 @@ export const App: React.FC = () => {
                   ) : (
                     <span className="text-slate-600 text-[10px]">None</span>
                   )}
-                </div>
-              </div>
-
-              {/* Internal Files */}
-              <div>
-                <div className="text-slate-400 text-[11px] font-mono mb-1.5">Internal Files:</div>
-                <div className="max-h-48 overflow-y-auto space-y-1 pr-1 font-mono text-[11px]">
-                  {activeModule.files.map((f) => (
-                    <div
-                      key={f}
-                      className="p-1.5 rounded bg-slate-900/60 border border-slate-800/40 text-slate-300 truncate"
-                    >
-                      {f.split("/").pop()}
-                    </div>
-                  ))}
                 </div>
               </div>
             </div>

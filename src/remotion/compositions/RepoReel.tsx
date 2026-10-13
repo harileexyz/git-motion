@@ -1,9 +1,9 @@
 import React from "react";
-import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate } from "remotion";
+import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, Audio, staticFile } from "remotion";
 import { RepoAnalysis, ThemePreset } from "../../core/types";
 import { THEMES } from "../themes";
 import { buildStructuredArchitecture } from "../../core/architecture";
-import { StructuredTierView } from "../components/StructuredTierView";
+import { MermaidFlowCanvas } from "../components/MermaidFlowCanvas";
 import { HUDOverlay } from "../components/HUDOverlay";
 
 export interface RepoReelProps {
@@ -29,7 +29,6 @@ export const RepoReel: React.FC<RepoReelProps> = ({
   let activeStep = 0;
   let sceneTitle = "1. Entrypoints & Interfaces";
   let sceneSubtitle = "CLI triggers & studio client";
-  let highlightHotspots = false;
 
   if (frame >= 220 && frame < 450) {
     activeStep = 1;
@@ -39,12 +38,13 @@ export const RepoReel: React.FC<RepoReelProps> = ({
     activeStep = 2;
     sceneTitle = "3. Core Architecture & Physics";
     sceneSubtitle = "Layout graph & topology models";
-    highlightHotspots = true;
   } else if (frame >= 680) {
     activeStep = 3;
     sceneTitle = "4. Video Canvas & Rendering";
     sceneSubtitle = "Remotion 60fps composition pipeline";
   }
+
+  const currentFlow = architecture.flowSteps[activeStep] || architecture.flowSteps[0];
 
   // Outro opacity
   const outroOpacity = interpolate(frame, [740, 800], [0, 1], {
@@ -54,6 +54,9 @@ export const RepoReel: React.FC<RepoReelProps> = ({
 
   return (
     <AbsoluteFill style={{ backgroundColor: theme.background }}>
+      {/* Background Cyber Audio Soundtrack */}
+      <Audio src={staticFile("audio/ambient-cyber.wav")} volume={0.6} />
+
       {/* Dynamic Background Ambient Light */}
       <div
         className="absolute w-[900px] h-[700px] rounded-full blur-[180px] pointer-events-none opacity-20"
@@ -64,13 +67,52 @@ export const RepoReel: React.FC<RepoReelProps> = ({
         }}
       />
 
-      {/* Structured 4-Tier Architecture Diagram */}
-      <StructuredTierView
+      {/* Proper Mermaid Flowchart Diagram */}
+      <MermaidFlowCanvas
         architecture={architecture}
         theme={theme}
         activeStepIndex={activeStep}
-        highlightHotspots={highlightHotspots}
+        progress={progress}
       />
+
+      {/* Explanatory Dataflow Banner (Clear, Plain-English Explanation) */}
+      <div className="absolute bottom-16 left-16 right-16 z-20 pointer-events-none">
+        <div
+          className="w-full rounded-2xl p-5 border shadow-2xl backdrop-blur-xl flex items-center justify-between font-mono"
+          style={{
+            backgroundColor: `${theme.canvasCard}f2`,
+            borderColor: `${theme.accent}66`,
+            boxShadow: `0 0 40px ${theme.accentGlow}`,
+          }}
+        >
+          <div className="flex items-center gap-4">
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black text-black shrink-0 shadow-lg"
+              style={{ backgroundColor: theme.accent }}
+            >
+              0{currentFlow.stepNumber}
+            </div>
+            <div>
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-extrabold text-white tracking-wide">
+                  {currentFlow.title}
+                </span>
+                <span className="text-xs text-white/40">
+                  ({currentFlow.sourceModule} ➔ {currentFlow.targetModule})
+                </span>
+              </div>
+              <p className="text-xs text-white/70 mt-0.5">{currentFlow.description}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 text-xs bg-white/5 px-4 py-2 rounded-xl border border-white/10 shrink-0">
+            <span className="text-white/50">Active Pipe:</span>
+            <span className="text-cyan-300 font-bold">{currentFlow.sourceFile}</span>
+            <span className="text-white/40">➔</span>
+            <span className="text-indigo-300 font-bold">{currentFlow.targetFile}</span>
+          </div>
+        </div>
+      </div>
 
       {/* Outro Blueprint Card (Final frames) */}
       {frame >= 740 && (
@@ -124,23 +166,6 @@ export const RepoReel: React.FC<RepoReelProps> = ({
               <div className="bg-white/5 rounded-2xl p-4 border border-white/5 text-center">
                 <div className="text-[10px] text-white/50 uppercase">Commits</div>
                 <div className="text-2xl font-bold text-white mt-1">{analysis.totalCommits}</div>
-              </div>
-            </div>
-
-            <div>
-              <div className="text-xs text-white/50 uppercase tracking-wider mb-2 font-semibold">
-                Highest Churn Modules (Active Development Focus)
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {analysis.modules.slice(0, 4).map((m) => (
-                  <span
-                    key={m.id}
-                    className="px-3 py-1.5 rounded-xl text-xs bg-white/10 text-white font-mono border border-white/10 flex items-center gap-2"
-                  >
-                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: m.color }} />
-                    {m.name} ({m.loc} loc)
-                  </span>
-                ))}
               </div>
             </div>
           </div>
