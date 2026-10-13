@@ -67,18 +67,18 @@ export const ModuleReel: React.FC<ModuleReelProps> = ({
       {/* Background Soft Cyber Ambient Bed */}
       <Audio src={staticFile("audio/ambient-cyber.wav")} volume={0.2} />
 
-      {/* Voiceover Narration Sequences for Module Spotlight */}
+      {/* Neural Voiceover Narration Sequences for Module Spotlight */}
       <Sequence from={0} durationInFrames={190}>
-        <Audio src={staticFile("audio/voice/module_step1.wav")} volume={1.0} />
+        <Audio src={staticFile("audio/voice/module_step1.mp3")} volume={1.0} />
       </Sequence>
       <Sequence from={200} durationInFrames={210}>
-        <Audio src={staticFile("audio/voice/module_step2.wav")} volume={1.0} />
+        <Audio src={staticFile("audio/voice/module_step2.mp3")} volume={1.0} />
       </Sequence>
       <Sequence from={420} durationInFrames={190}>
-        <Audio src={staticFile("audio/voice/module_step3.wav")} volume={1.0} />
+        <Audio src={staticFile("audio/voice/module_step3.mp3")} volume={1.0} />
       </Sequence>
       <Sequence from={620} durationInFrames={130}>
-        <Audio src={staticFile("audio/voice/module_step4.wav")} volume={1.0} />
+        <Audio src={staticFile("audio/voice/module_step4.mp3")} volume={1.0} />
       </Sequence>
       {/* Background radial beacon */}
       <div
