@@ -4,6 +4,7 @@ import { RepoAnalysis, ThemePreset } from "../../core/types";
 import { THEMES } from "../themes";
 import { buildStructuredArchitecture } from "../../core/architecture";
 import { MermaidFlowCanvas } from "../components/MermaidFlowCanvas";
+import { KineticCaptionBar } from "../components/KineticCaptionBar";
 import { HUDOverlay } from "../components/HUDOverlay";
 
 export interface RepoReelProps {
@@ -29,53 +30,67 @@ export const RepoReel: React.FC<RepoReelProps> = ({
   let activeStep = 0;
   let sceneTitle = "1. Entrypoints & Interfaces";
   let sceneSubtitle = "CLI triggers & studio client";
+  let captionText =
+    "When you run git-motion, execution begins right at your terminal or browser, reading your local workspace without sending any code to the cloud.";
+  let highlightWords = ["git-motion", "terminal", "browser", "local", "cloud"];
+  let accentColor = "#c4ff78"; // Semicolon Mint
 
-  if (frame >= 220 && frame < 450) {
+  if (frame >= 230 && frame < 460) {
     activeStep = 1;
     sceneTitle = "2. Processing & Analysis";
     sceneSubtitle = "AST file parsing & git churn";
-  } else if (frame >= 450 && frame < 680) {
+    captionText =
+      "The local engine instantly inspects your files, mapping import statements across TypeScript, Python, and Go, while calculating your Git commit churn.";
+    highlightWords = ["local", "inspects", "TypeScript", "Python", "Go", "churn"];
+    accentColor = "#00f3ff"; // Cyan
+  } else if (frame >= 460 && frame < 690) {
     activeStep = 2;
     sceneTitle = "3. Core Architecture & Physics";
     sceneSubtitle = "Layout graph & topology models";
-  } else if (frame >= 680) {
+    captionText =
+      "Next, the layout engine clusters your files into four architectural tiers, tracing inbound consumers and outbound dependencies.";
+    highlightWords = ["layout", "clusters", "four", "architectural", "tiers", "dependencies"];
+    accentColor = "#ff967d"; // Semicolon Coral
+  } else if (frame >= 690) {
     activeStep = 3;
     sceneTitle = "4. Video Canvas & Rendering";
     sceneSubtitle = "Remotion 60fps composition pipeline";
+    captionText =
+      "Finally, Remotion composes the timeline at sixty frames per second, exporting a verified video ready to embed directly in your documentation.";
+    highlightWords = ["Remotion", "sixty", "frames", "video", "documentation"];
+    accentColor = "#c4ff78"; // Semicolon Mint
   }
 
-  const currentFlow = architecture.flowSteps[activeStep] || architecture.flowSteps[0];
-
   // Outro opacity
-  const outroOpacity = interpolate(frame, [740, 800], [0, 1], {
+  const outroOpacity = interpolate(frame, [760, 820], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
   return (
-    <AbsoluteFill style={{ backgroundColor: theme.background }}>
-      {/* Background Soft Cyber Ambient Bed (20% volume) */}
-      <Audio src={staticFile("audio/ambient-cyber.wav")} volume={0.2} />
+    <AbsoluteFill style={{ backgroundColor: "#0b1628" }}>
+      {/* Background Subtle Cyber Ambient Bed (18% volume) */}
+      <Audio src={staticFile("audio/ambient-cyber.wav")} volume={0.18} />
 
-      {/* Neural Voiceover Narration Sequences (100% volume) */}
-      <Sequence from={0} durationInFrames={210}>
-        <Audio src={staticFile("audio/voice/step1.mp3")} volume={1.0} />
+      {/* Semicolon-Studio Kokoro af_heart Voice Narration Sequences (speed 1.12) */}
+      <Sequence from={0} durationInFrames={230}>
+        <Audio src={staticFile("audio/voice/step1.wav")} volume={1.0} />
       </Sequence>
-      <Sequence from={220} durationInFrames={210}>
-        <Audio src={staticFile("audio/voice/step2.mp3")} volume={1.0} />
+      <Sequence from={230} durationInFrames={230}>
+        <Audio src={staticFile("audio/voice/step2.wav")} volume={1.0} />
       </Sequence>
-      <Sequence from={450} durationInFrames={210}>
-        <Audio src={staticFile("audio/voice/step3.mp3")} volume={1.0} />
+      <Sequence from={460} durationInFrames={230}>
+        <Audio src={staticFile("audio/voice/step3.wav")} volume={1.0} />
       </Sequence>
-      <Sequence from={680} durationInFrames={200}>
-        <Audio src={staticFile("audio/voice/step4.mp3")} volume={1.0} />
+      <Sequence from={690} durationInFrames={210}>
+        <Audio src={staticFile("audio/voice/step4.wav")} volume={1.0} />
       </Sequence>
 
       {/* Dynamic Background Ambient Light */}
       <div
         className="absolute w-[900px] h-[700px] rounded-full blur-[180px] pointer-events-none opacity-20"
         style={{
-          backgroundColor: theme.accent,
+          backgroundColor: accentColor,
           left: width / 2 - 450,
           top: height / 2 - 350,
         }}
@@ -84,67 +99,37 @@ export const RepoReel: React.FC<RepoReelProps> = ({
       {/* Proper Mermaid Flowchart Diagram */}
       <MermaidFlowCanvas
         architecture={architecture}
-        theme={theme}
+        theme={{ ...theme, accent: accentColor }}
         activeStepIndex={activeStep}
         progress={progress}
       />
 
-      {/* Explanatory Dataflow Banner (Clear, Plain-English Explanation) */}
-      <div className="absolute bottom-16 left-16 right-16 z-20 pointer-events-none">
-        <div
-          className="w-full rounded-2xl p-5 border shadow-2xl backdrop-blur-xl flex items-center justify-between font-mono"
-          style={{
-            backgroundColor: `${theme.canvasCard}f2`,
-            borderColor: `${theme.accent}66`,
-            boxShadow: `0 0 40px ${theme.accentGlow}`,
-          }}
-        >
-          <div className="flex items-center gap-4">
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black text-black shrink-0 shadow-lg"
-              style={{ backgroundColor: theme.accent }}
-            >
-              0{currentFlow.stepNumber}
-            </div>
-            <div>
-              <div className="flex items-center gap-3">
-                <span className="text-sm font-extrabold text-white tracking-wide">
-                  {currentFlow.title}
-                </span>
-                <span className="text-xs text-white/40">
-                  ({currentFlow.sourceModule} ➔ {currentFlow.targetModule})
-                </span>
-              </div>
-              <p className="text-xs text-white/70 mt-0.5">{currentFlow.description}</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 text-xs bg-white/5 px-4 py-2 rounded-xl border border-white/10 shrink-0">
-            <span className="text-white/50">Active Pipe:</span>
-            <span className="text-cyan-300 font-bold">{currentFlow.sourceFile}</span>
-            <span className="text-white/40">➔</span>
-            <span className="text-indigo-300 font-bold">{currentFlow.targetFile}</span>
-          </div>
-        </div>
-      </div>
+      {/* Semicolon Kinetic Captions Bar (Roboto + Word Highlights) */}
+      <KineticCaptionBar
+        stepNumber={activeStep + 1}
+        title={sceneTitle}
+        captionText={captionText}
+        highlightWords={highlightWords}
+        accentColor={accentColor}
+      />
 
       {/* Outro Blueprint Card (Final frames) */}
-      {frame >= 740 && (
+      {frame >= 760 && (
         <div
-          className="absolute inset-0 flex items-center justify-center p-16 z-30 pointer-events-none"
+          className="absolute inset-0 flex items-center justify-center p-16 z-40 pointer-events-none"
           style={{ opacity: outroOpacity }}
         >
           <div
-            className="w-full max-w-3xl rounded-3xl p-10 border shadow-2xl backdrop-blur-2xl flex flex-col gap-6 font-mono"
+            className="w-full max-w-3xl rounded-3xl p-10 border shadow-2xl backdrop-blur-2xl flex flex-col gap-6 font-['Roboto',sans-serif]"
             style={{
-              backgroundColor: `${theme.canvasCard}f8`,
-              borderColor: `${theme.accent}88`,
-              boxShadow: `0 0 60px ${theme.accentGlow}`,
+              backgroundColor: "rgba(11, 22, 40, 0.96)",
+              borderColor: "rgba(196, 255, 120, 0.5)",
+              boxShadow: "0 0 60px rgba(196, 255, 120, 0.25)",
             }}
           >
             <div className="flex justify-between items-start border-b border-white/10 pb-5">
               <div>
-                <span className="text-xs uppercase tracking-widest text-cyan-400 font-bold">
+                <span className="text-xs uppercase tracking-widest text-[#c4ff78] font-bold">
                   Architecture Scorecard
                 </span>
                 <h1 className="text-4xl font-black text-white mt-1">{analysis.name}</h1>
@@ -155,9 +140,9 @@ export const RepoReel: React.FC<RepoReelProps> = ({
               <div
                 className="px-4 py-2 rounded-xl text-xs font-bold border"
                 style={{
-                  backgroundColor: `${theme.accent}20`,
-                  borderColor: theme.accent,
-                  color: theme.accent,
+                  backgroundColor: "rgba(196, 255, 120, 0.15)",
+                  borderColor: "#c4ff78",
+                  color: "#c4ff78",
                 }}
               >
                 git-motion

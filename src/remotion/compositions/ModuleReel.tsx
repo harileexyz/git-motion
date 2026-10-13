@@ -3,6 +3,7 @@ import { AbsoluteFill, useCurrentFrame, useVideoConfig, Audio, Sequence, staticF
 import { RepoAnalysis, ThemePreset } from "../../core/types";
 import { THEMES } from "../themes";
 import { ModuleBoundaryView } from "../components/ModuleBoundaryView";
+import { KineticCaptionBar } from "../components/KineticCaptionBar";
 import { HUDOverlay } from "../components/HUDOverlay";
 
 export interface ModuleReelProps {
@@ -35,7 +36,7 @@ export const ModuleReel: React.FC<ModuleReelProps> = ({
         inboundDependencies: [],
         outboundDependencies: [],
         files: [],
-        color: "#00f3ff",
+        color: "#c4ff78",
         churnScore: 0.5,
       }
     );
@@ -46,45 +47,58 @@ export const ModuleReel: React.FC<ModuleReelProps> = ({
   // 4 Phased Walkthrough
   let activePhase = 0;
   let sceneTitle = `Module Spotlight: [${moduleInfo.name}]`;
-  let sceneSubtitle = "Subsystem boundary isolation";
+  let captionText =
+    "This is the subsystem boundary spotlight. On the left, we map all inbound consumers that import this module.";
+  let highlightWords = ["subsystem", "boundary", "inbound", "consumers", "module"];
+  let accentColor = "#c4ff78";
 
-  if (frame >= 200 && frame < 420) {
+  if (frame >= 190 && frame < 400) {
     activePhase = 1;
     sceneTitle = "Internal Component Topology";
-    sceneSubtitle = `${moduleInfo.fileCount} files • ${moduleInfo.loc} LOC • ${moduleInfo.primaryLanguage}`;
-  } else if (frame >= 420 && frame < 620) {
+    captionText =
+      "In the center, we inspect the module's internal file anatomy, language breakdown, and total lines of verified code.";
+    highlightWords = ["internal", "anatomy", "language", "lines", "verified"];
+    accentColor = "#00f3ff";
+  } else if (frame >= 400 && frame < 590) {
     activePhase = 2;
     sceneTitle = "Core Logic & Handlers";
-    sceneSubtitle = "Internal dataflow & request lifecycle";
-  } else if (frame >= 620) {
+    captionText =
+      "Here is the core handler logic, orchestrating state transformations within this architectural boundary.";
+    highlightWords = ["core", "handler", "state", "transformations", "boundary"];
+    accentColor = "#ff967d";
+  } else if (frame >= 590) {
     activePhase = 3;
     sceneTitle = "Subsystem Health Scorecard";
-    sceneSubtitle = "Maintainer velocity & coupling metrics";
+    captionText =
+      "On the right, we track outbound dependencies required by this module to complete execution.";
+    highlightWords = ["outbound", "dependencies", "complete", "execution"];
+    accentColor = "#c4ff78";
   }
 
   return (
-    <AbsoluteFill style={{ backgroundColor: theme.background }}>
+    <AbsoluteFill style={{ backgroundColor: "#0b1628" }}>
       {/* Background Soft Cyber Ambient Bed */}
-      <Audio src={staticFile("audio/ambient-cyber.wav")} volume={0.2} />
+      <Audio src={staticFile("audio/ambient-cyber.wav")} volume={0.18} />
 
-      {/* Neural Voiceover Narration Sequences for Module Spotlight */}
+      {/* Semicolon-Studio Kokoro af_heart Voice Narration Sequences for Module Spotlight */}
       <Sequence from={0} durationInFrames={190}>
-        <Audio src={staticFile("audio/voice/module_step1.mp3")} volume={1.0} />
+        <Audio src={staticFile("audio/voice/module_step1.wav")} volume={1.0} />
       </Sequence>
-      <Sequence from={200} durationInFrames={210}>
-        <Audio src={staticFile("audio/voice/module_step2.mp3")} volume={1.0} />
+      <Sequence from={190} durationInFrames={210}>
+        <Audio src={staticFile("audio/voice/module_step2.wav")} volume={1.0} />
       </Sequence>
-      <Sequence from={420} durationInFrames={190}>
-        <Audio src={staticFile("audio/voice/module_step3.mp3")} volume={1.0} />
+      <Sequence from={400} durationInFrames={190}>
+        <Audio src={staticFile("audio/voice/module_step3.wav")} volume={1.0} />
       </Sequence>
-      <Sequence from={620} durationInFrames={130}>
-        <Audio src={staticFile("audio/voice/module_step4.mp3")} volume={1.0} />
+      <Sequence from={590} durationInFrames={160}>
+        <Audio src={staticFile("audio/voice/module_step4.wav")} volume={1.0} />
       </Sequence>
+
       {/* Background radial beacon */}
       <div
         className="absolute w-[800px] h-[600px] rounded-full blur-[160px] pointer-events-none opacity-20"
         style={{
-          backgroundColor: moduleInfo.color,
+          backgroundColor: accentColor,
           left: "50%",
           top: "50%",
           transform: "translate(-50%, -50%)",
@@ -95,8 +109,17 @@ export const ModuleReel: React.FC<ModuleReelProps> = ({
       <ModuleBoundaryView
         module={moduleInfo}
         allFiles={analysis.files}
-        theme={theme}
+        theme={{ ...theme, accent: accentColor }}
         activePhase={activePhase}
+      />
+
+      {/* Semicolon Kinetic Captions Bar */}
+      <KineticCaptionBar
+        stepNumber={activePhase + 1}
+        title={sceneTitle}
+        captionText={captionText}
+        highlightWords={highlightWords}
+        accentColor={accentColor}
       />
 
       {/* Futuristic HUD */}
@@ -107,7 +130,7 @@ export const ModuleReel: React.FC<ModuleReelProps> = ({
         totalCommits={analysis.totalCommits}
         totalFiles={analysis.totalFiles}
         currentSceneTitle={sceneTitle}
-        currentSceneSubtitle={sceneSubtitle}
+        currentSceneSubtitle={`${moduleInfo.fileCount} files • ${moduleInfo.loc} LOC`}
         progress={progress}
       />
     </AbsoluteFill>
