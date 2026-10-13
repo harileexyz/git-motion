@@ -1,5 +1,5 @@
 import React from "react";
-import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, Audio, Sequence, staticFile } from "remotion";
+import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, Audio, staticFile } from "remotion";
 import { RepoAnalysis, ThemePreset } from "../../core/types";
 import { THEMES } from "../themes";
 import { AnimatedArchitectureDiagram } from "../components/AnimatedArchitectureDiagram";
@@ -21,66 +21,51 @@ export const RepoReel: React.FC<RepoReelProps> = ({
 
   const progress = frame / durationInFrames;
 
-  // Exact step frame boundaries matching measured Kokoro audio durations:
-  // Step 1: 0 -> 245 frames (step1.mp3: 232 frames)
-  // Step 2: 245 -> 520 frames (step2.mp3: 263 frames)
-  // Step 3: 520 -> 760 frames (step3.mp3: 225 frames)
-  // Step 4: 760 -> 1020 frames (step4.mp3: 233 frames)
+  // Exact step frame boundaries from stitched Kokoro narration: [0, 243, 459, 691]
   let activeStep = 0;
   let sceneTitle = "1. Starting Point";
   let sceneSubtitle = "Runs on your laptop";
   let captionText =
-    "When you run git-motion, it starts right on your computer. You can use your terminal or open the web studio. Nothing is uploaded to the cloud.";
-  let highlightWords = ["git-motion", "computer", "terminal", "web", "studio", "cloud"];
+    "When you run git motion, it starts right on your computer. It opens a local web server and studio so you can see your project immediately.";
+  let highlightWords = ["git motion", "computer", "local", "web", "server", "studio", "immediately"];
   let accentColor = "#38bdf8"; // Sky Blue
 
-  if (frame >= 245 && frame < 520) {
+  if (frame >= 243 && frame < 459) {
     activeStep = 1;
     sceneTitle = "2. Scanning Your Files";
     sceneSubtitle = "Reads imports & Git churn";
     captionText =
-      "Next, it quickly looks through all the files in your project. It sees which files connect to each other, and checks your Git history to find the most active files.";
-    highlightWords = ["quickly", "files", "project", "connect", "Git", "history", "active"];
+      "Next, git motion reads your code files to see how they connect, and checks your git history to find the most active files.";
+    highlightWords = ["reads", "code", "files", "connect", "git", "history", "active"];
     accentColor = "#00f3ff"; // Cyan
-  } else if (frame >= 520 && frame < 760) {
+  } else if (frame >= 459 && frame < 691) {
     activeStep = 2;
     sceneTitle = "3. Organizing The Code";
-    sceneSubtitle = "Four simple groups";
+    sceneSubtitle = "Four simple layers";
     captionText =
-      "Then, it organizes your code into four simple parts: your entry points, your backend server, the core engine, and the video renderer.";
-    highlightWords = ["organizes", "four", "simple", "parts", "entry", "points", "backend", "engine", "video"];
+      "Then, it organizes your codebase into four simple layers: your entry points, the server, the core engine, and the video renderer.";
+    highlightWords = ["organizes", "four", "simple", "layers", "entry", "points", "server", "core", "renderer"];
     accentColor = "#ff967d"; // Coral
-  } else if (frame >= 760) {
+  } else if (frame >= 691) {
     activeStep = 3;
     sceneTitle = "4. Creating The Video";
     sceneSubtitle = "Ready for your GitHub README";
     captionText =
-      "Finally, it turns this blueprint into a smooth video that shows how your project works. You can save it and put it right on your GitHub page.";
-    highlightWords = ["smooth", "video", "project", "save", "GitHub", "page"];
+      "Finally, it turns this blueprint into a smooth video that shows how your project works from start to finish.";
+    highlightWords = ["blueprint", "smooth", "video", "project", "works", "start", "finish"];
     accentColor = "#c4ff78"; // Mint
   }
 
   // Outro opacity
-  const outroOpacity = interpolate(frame, [880, 940], [0, 1], {
+  const outroOpacity = interpolate(frame, [810, 850], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
   return (
     <AbsoluteFill style={{ backgroundColor: "#0b1628" }}>
-      {/* Semicolon Kokoro af_heart Voice Narration (Universal MP3, instant decode) */}
-      <Sequence from={0} durationInFrames={245}>
-        <Audio src={staticFile("audio/voice/step1.mp3")} volume={1.0} />
-      </Sequence>
-      <Sequence from={245} durationInFrames={275}>
-        <Audio src={staticFile("audio/voice/step2.mp3")} volume={1.0} />
-      </Sequence>
-      <Sequence from={520} durationInFrames={240}>
-        <Audio src={staticFile("audio/voice/step3.mp3")} volume={1.0} />
-      </Sequence>
-      <Sequence from={760} durationInFrames={260}>
-        <Audio src={staticFile("audio/voice/step4.mp3")} volume={1.0} />
-      </Sequence>
+      {/* Semicolon Kokoro af_heart Voice Narration - Unified single audio track, zero stutter */}
+      <Audio src={staticFile("audio/voice/overview_full.mp3")} volume={1.0} />
 
       {/* Dynamic Background Radial Aura */}
       <div
@@ -109,7 +94,7 @@ export const RepoReel: React.FC<RepoReelProps> = ({
       />
 
       {/* Outro Blueprint Card (Final frames) */}
-      {frame >= 880 && (
+      {frame >= 810 && (
         <div
           className="absolute inset-0 flex items-center justify-center p-16 z-40 pointer-events-none"
           style={{ opacity: outroOpacity }}
@@ -144,25 +129,25 @@ export const RepoReel: React.FC<RepoReelProps> = ({
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-3">
-              <div className="bg-white/5 rounded-2xl p-4 border border-white/5 text-center">
-                <div className="text-[10px] text-white/50 uppercase">Total Files</div>
-                <div className="text-2xl font-bold text-white mt-1">{analysis.totalFiles}</div>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+                <span className="text-xs text-white/60 font-mono">Files Scanned</span>
+                <div className="text-2xl font-black text-white mt-1">{analysis.totalFiles}</div>
               </div>
-              <div className="bg-white/5 rounded-2xl p-4 border border-white/5 text-center">
-                <div className="text-[10px] text-white/50 uppercase">Lines of Code</div>
-                <div className="text-2xl font-bold text-white mt-1">{analysis.totalLOC.toLocaleString()}</div>
+              <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+                <span className="text-xs text-white/60 font-mono">Lines of Code</span>
+                <div className="text-2xl font-black text-white mt-1">{analysis.totalLOC.toLocaleString()}</div>
               </div>
-              <div className="bg-white/5 rounded-2xl p-4 border border-white/5 text-center">
-                <div className="text-[10px] text-white/50 uppercase">Parts</div>
-                <div className="text-2xl font-bold text-white mt-1">{analysis.modules.length}</div>
+              <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+                <span className="text-xs text-white/60 font-mono">Subsystems</span>
+                <div className="text-2xl font-black text-white mt-1">{analysis.modules.length}</div>
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Top HUD with clean top-edge progress bar (NO bottom overlap) */}
+      {/* Futuristic HUD with top-edge progress bar (NO bottom overlap) */}
       <HUDOverlay
         theme={{ ...theme, accent: accentColor }}
         repoName={analysis.name}
