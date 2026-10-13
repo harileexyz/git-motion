@@ -27,157 +27,157 @@ interface SubsystemStory {
 const SUBSYSTEM_STORIES: Record<string, SubsystemStory> = {
   server: {
     audioFile: "audio/voice/server_full.mp3",
-    stepStarts: [0, 287, 516, 733],
+    stepStarts: [0, 461, 991, 1483],
     steps: [
       {
         title: "1. Express HTTP Server: [src/server/index.ts]",
-        caption: "Inside the server, index dot t s starts an Express web server on port 4321 to handle all requests and render jobs.",
-        highlights: ["server", "index.ts", "Express", "4321", "requests", "render"],
+        caption: "Inside the server subsystem, index dot t s bootstraps an Express HTTP daemon on port 4321, binding CORS policies and registering REST endpoints for analytical queries and headless video rendering.",
+        highlights: ["server", "index.ts", "Express", "daemon", "4321", "CORS", "REST", "endpoints", "rendering"],
       },
       {
-        title: "2. AST File Scanner: [src/server/analyzer.ts]",
-        caption: "Next, analyzer dot t s scans your project files, reading imports and exports to map out how each file connects.",
-        highlights: ["analyzer.ts", "scans", "imports", "exports", "connects"],
+        title: "2. Multi-Language AST Scanner: [src/server/analyzer.ts]",
+        caption: "Next, analyzer dot t s performs recursive directory scans while ignoring node modules and git. It uses language-specific regex tokenizers to extract imports across TypeScript, Python, Go, and Rust, resolving relative paths into concrete edges.",
+        highlights: ["analyzer.ts", "directory", "scans", "tokenizers", "imports", "TypeScript", "Python", "Go", "Rust", "edges"],
       },
       {
-        title: "3. Git Churn & Hotspots: [src/server/git.ts]",
-        caption: "Then, git dot t s runs git commands in the background to count commits and highlight the most frequently edited files.",
-        highlights: ["git.ts", "git", "commits", "frequently", "edited"],
+        title: "3. Git Churn Normalization: [src/server/git.ts]",
+        caption: "Then, git dot t s spawns a child process to execute git log with numstat. It scores file velocity using the normalized formula sixty-five percent commit frequency plus thirty-five percent line deltas to spotlight critical code hotspots.",
+        highlights: ["git.ts", "git", "log", "numstat", "velocity", "normalized", "commit", "frequency", "deltas", "hotspots"],
       },
       {
-        title: "4. Graph Cache & API Delivery: [src/server/index.ts]",
-        caption: "Finally, it stores this complete project map in memory and serves it instantly to your web browser.",
-        highlights: ["project", "map", "memory", "serves", "browser"],
+        title: "4. In-Memory Graph Cache: [src/server/index.ts]",
+        caption: "Finally, it constructs the universal RepoAnalysis data model, caching file nodes and dependency links in memory to instantly feed both the web studio and the Remotion video engine.",
+        highlights: ["RepoAnalysis", "model", "file", "nodes", "dependency", "links", "memory", "studio", "Remotion"],
       },
     ],
   },
   core: {
     audioFile: "audio/voice/core_full.mp3",
-    stepStarts: [0, 234, 481, 679],
+    stepStarts: [0, 394, 794, 1185],
     steps: [
       {
-        title: "1. Universal Type Models: [src/core/types.ts]",
-        caption: "The core folder holds the main blueprints. In types dot t s, it defines what files, modules, and connections look like.",
-        highlights: ["core", "blueprints", "types.ts", "files", "modules", "connections"],
+        title: "1. Universal Type Contracts: [src/core/types.ts]",
+        caption: "The core subsystem defines the architectural schema in types dot t s, establishing strongly typed contracts for FileNode, ModuleCluster, and DependencyLink with zero external dependencies.",
+        highlights: ["core", "types.ts", "FileNode", "ModuleCluster", "DependencyLink", "zero", "dependencies"],
       },
       {
-        title: "2. 4-Tier Architecture Classifier: [src/core/architecture.ts]",
-        caption: "Next, architecture dot t s sorts your code into four simple tiers, separating your entry points from deep processing logic.",
-        highlights: ["architecture.ts", "sorts", "four", "tiers", "entry", "processing"],
+        title: "2. 4-Tier Hierarchical Classifier: [src/core/architecture.ts]",
+        caption: "Next, architecture dot t s groups files into four hierarchical tiers: entry points with high outbound calls, orchestration servers, foundational domain data models, and output rendering leaves.",
+        highlights: ["architecture.ts", "four", "hierarchical", "tiers", "entry", "points", "servers", "domain", "rendering"],
       },
       {
-        title: "3. Coupling Calculator: [src/core/architecture.ts]",
-        caption: "Then, it calculates coupling scores to show which modules rely heavily on each other and which stand on their own.",
-        highlights: ["calculates", "coupling", "scores", "modules", "rely"],
+        title: "3. Coupling & Volatility Scoring: [src/core/architecture.ts]",
+        caption: "Then, it calculates module coupling ratios by dividing outbound dependencies by total connections, identifying tightly coupled orchestration layers versus independent foundational libraries.",
+        highlights: ["coupling", "ratios", "outbound", "dependencies", "orchestration", "independent", "libraries"],
       },
       {
-        title: "4. Flowcharts & Blueprints: [src/core/mermaid.ts]",
-        caption: "Finally, mermaid dot t s builds visual flowcharts and interactive diagrams so anyone can understand your app at a glance.",
-        highlights: ["mermaid.ts", "flowcharts", "interactive", "diagrams", "glance"],
+        title: "4. SVG Blueprint Compiler: [src/core/htmlBlueprint.ts]",
+        caption: "Finally, htmlBlueprint dot t s compiles interactive standalone SVG system blueprints with themed zone boundaries, data lanes, and travelling photon pulse animations.",
+        highlights: ["htmlBlueprint.ts", "interactive", "SVG", "blueprints", "boundaries", "photon", "animations"],
       },
     ],
   },
   remotion: {
     audioFile: "audio/voice/remotion_full.mp3",
-    stepStarts: [0, 281, 512, 703],
+    stepStarts: [0, 391, 838, 1218],
     steps: [
       {
         title: "1. 60fps Composition Registry: [src/remotion/Root.tsx]",
-        caption: "The remotion folder handles video creation. In Root dot t s, it sets up widescreen and vertical video layouts at sixty frames per second.",
-        highlights: ["remotion", "video", "Root.tsx", "widescreen", "vertical", "sixty", "frames"],
+        caption: "The remotion subsystem houses sixty frames per second video compositions in Root dot t s, configuring landscape nineteen-twenty by ten-eighty and vertical ten-eighty by nineteen-twenty viewports.",
+        highlights: ["remotion", "sixty", "frames", "Root.tsx", "landscape", "vertical", "viewports"],
       },
       {
-        title: "2. Animated Light Beams: [src/remotion/AnimatedArchitectureDiagram.tsx]",
-        caption: "Next, the animated diagram draws glowing light pulses that travel across your code connections to show live data flow.",
-        highlights: ["animated", "diagram", "glowing", "pulses", "connections", "data", "flow"],
+        title: "2. Cubic Bezier Light Beams: [src/remotion/AnimatedArchitectureDiagram.tsx]",
+        caption: "Next, AnimatedArchitectureDiagram dot t s x computes SVG cubic bezier paths between modules, interpolating photon light pulses across connection curves as a pure mathematical function of the current frame.",
+        highlights: ["AnimatedArchitectureDiagram.tsx", "cubic", "bezier", "photon", "pulses", "mathematical", "frame"],
       },
       {
-        title: "3. Motion Camera & HUD Sync: [src/remotion/HUDOverlay.tsx]",
-        caption: "Then, the camera pans smoothly across each section while a clean progress bar tracks the timeline at the top.",
-        highlights: ["camera", "pans", "progress", "bar", "timeline", "top"],
+        title: "3. Kinetic Subtitle Typography: [src/remotion/KineticCaptionBar.tsx]",
+        caption: "Then, KineticCaptionBar dot t s x renders word-by-word subtitles with dynamic glowing backgrounds, highlighting critical technical keywords in real time as the neural voiceover speaks.",
+        highlights: ["KineticCaptionBar.tsx", "subtitles", "glowing", "backgrounds", "keywords", "real", "time", "voiceover"],
       },
       {
-        title: "4. Kinetic Captions & Audio: [src/remotion/KineticCaptionBar.tsx]",
-        caption: "Finally, the captions bar plays natural voice narration and highlights each word in real time as it speaks.",
-        highlights: ["captions", "voice", "narration", "highlights", "word", "real", "time"],
+        title: "4. Motion Camera & HUD Sync: [src/remotion/HUDOverlay.tsx]",
+        caption: "Finally, spring and interpolate hooks smoothly pan and zoom the camera into active subsystem boundaries, synchronized with a top glowing progress bar and zero audio stutter.",
+        highlights: ["spring", "interpolate", "camera", "subsystem", "boundaries", "progress", "bar", "audio"],
       },
     ],
   },
   cli: {
     audioFile: "audio/voice/cli_full.mp3",
-    stepStarts: [0, 249, 417, 592],
+    stepStarts: [0, 327, 626, 935],
     steps: [
       {
-        title: "1. Command Line Entrypoint: [src/cli/bin.ts]",
-        caption: "The c l i is your command line entry point. In bin dot t s, it understands commands like analyze, preview, and render.",
-        highlights: ["c l i", "command", "line", "bin.ts", "commands", "analyze", "preview", "render"],
+        title: "1. Commander CLI Entrypoint: [src/cli/bin.ts]",
+        caption: "In bin dot t s, the commander CLI handles flags like port, theme, and headless render, validating the working tree and locating the root git repository marker.",
+        highlights: ["bin.ts", "commander", "CLI", "flags", "port", "theme", "render", "repository"],
       },
       {
-        title: "2. Git Workspace Detection: [src/cli/bin.ts]",
-        caption: "Next, it checks that you are inside a git repository and prepares the project for scanning.",
-        highlights: ["checks", "git", "repository", "prepares", "scanning"],
+        title: "2. Repository Validation: [src/cli/bin.ts]",
+        caption: "Next, it verifies local repository integrity, builds the server and client bundles, and spawns the background Express daemon on an available local port.",
+        highlights: ["verifies", "integrity", "bundles", "spawns", "Express", "daemon", "port"],
       },
       {
-        title: "3. Local Studio Spawner: [src/cli/bin.ts]",
-        caption: "Then, it launches the background server and automatically opens the studio dashboard in your browser.",
-        highlights: ["launches", "server", "opens", "studio", "dashboard", "browser"],
+        title: "3. Browser Cockpit Launch: [src/cli/bin.ts]",
+        caption: "Then, it automatically opens your default web browser to localhost 4321, connecting you directly to the interactive studio cockpit.",
+        highlights: ["browser", "localhost", "4321", "interactive", "studio", "cockpit"],
       },
       {
-        title: "4. Headless MP4 Renderer: [src/cli/bin.ts]",
-        caption: "Finally, it can export high quality video walkthroughs directly from your terminal without opening a browser.",
-        highlights: ["export", "high", "quality", "video", "terminal", "browser"],
+        title: "4. Headless CI/CD Rendering: [src/cli/bin.ts]",
+        caption: "Finally, it supports headless batch rendering, compiling sixty frames per second MP4 architecture walkthroughs directly from CI/CD without requiring a browser window.",
+        highlights: ["headless", "rendering", "sixty", "frames", "MP4", "CI/CD", "walkthroughs"],
       },
     ],
   },
   studio: {
     audioFile: "audio/voice/studio_full.mp3",
-    stepStarts: [0, 199, 417, 620],
+    stepStarts: [0, 282, 693, 1074],
     steps: [
       {
         title: "1. React Vite Dashboard: [src/studio/main.tsx]",
-        caption: "The studio is the interactive web dashboard. Built with React and Vite, it launches instantly in your browser.",
-        highlights: ["studio", "dashboard", "React", "Vite", "browser"],
+        caption: "The studio plane provides an interactive developer cockpit built with React and Vite, featuring zero-lag responsive layout and hot module reloading.",
+        highlights: ["studio", "developer", "cockpit", "React", "Vite", "layout", "reloading"],
       },
       {
-        title: "2. Video Player Controller: [src/studio/App.tsx]",
-        caption: "In App dot t s x, it embeds the video player with easy controls to play, pause, and scrub through the timeline.",
-        highlights: ["App.tsx", "embeds", "video", "player", "controls", "play", "pause", "scrub"],
+        title: "2. Isolated 60fps Scrubber: [src/studio/components/VideoControlsBar.tsx]",
+        caption: "In VideoControlsBar dot t s x, player state is strictly isolated from parent components, using a sixty frames per second animation frame loop to guarantee butter-smooth scrubbing without re-render storms.",
+        highlights: ["VideoControlsBar.tsx", "isolated", "sixty", "frames", "loop", "scrubbing", "re-render"],
       },
       {
-        title: "3. Interactive Blueprint Viewer: [src/studio/components/MermaidViewer.tsx]",
-        caption: "It also displays the full interactive architecture blueprint, letting you click on any subsystem to see how it works.",
-        highlights: ["interactive", "architecture", "blueprint", "click", "subsystem"],
+        title: "3. Multi-View Architecture Tabs: [src/studio/App.tsx]",
+        caption: "Next, App dot t s x lets engineers switch instantly between the cinematic video walkthrough, the interactive SVG blueprint, the production technical design document, and raw Mermaid diagrams.",
+        highlights: ["App.tsx", "cinematic", "video", "interactive", "SVG", "blueprint", "technical", "design", "Mermaid"],
       },
       {
-        title: "4. Walkthrough & Export Dispatcher: [src/studio/App.tsx]",
-        caption: "From here, you can switch between the full project view and individual modules, or export a video with one click.",
-        highlights: ["switch", "project", "view", "modules", "export", "video"],
+        title: "4. Subsystem Inspector & Export: [src/studio/App.tsx]",
+        caption: "Finally, engineers can filter subsystems, inspect inbound callers and outbound dependencies, customize visual themes, and export high-definition video walkthroughs with one click.",
+        highlights: ["filter", "subsystems", "inbound", "outbound", "dependencies", "themes", "export"],
       },
     ],
   },
   default: {
     audioFile: "audio/voice/module_full.mp3",
-    stepStarts: [0, 192, 381, 538],
+    stepStarts: [0, 304, 609, 904],
     steps: [
       {
-        title: "1. Subsystem Foundation: [Configuration & Setup]",
-        caption: "This module organizes the foundation of your project, including configuration files and build settings.",
-        highlights: ["module", "foundation", "project", "configuration", "build"],
+        title: "1. Workspace Manifest: [package.json & tsconfig.json]",
+        caption: "This module organizes the foundation of your project workspace, declaring environment configuration, root dependency manifests, and build automation pipelines.",
+        highlights: ["foundation", "workspace", "configuration", "dependency", "manifests", "pipelines"],
       },
       {
-        title: "2. Pipeline & Compiler: [Dependencies & Build]",
-        caption: "Inside, it sets up packages, compilation rules, and styling to keep your entire app running smoothly.",
-        highlights: ["packages", "compilation", "rules", "styling", "running", "smoothly"],
+        title: "2. Type Safety & Compiler: [tsconfig.json & vite.config.ts]",
+        caption: "Inside, TypeScript compilation targets and bundler configurations ensure strict type safety across both frontend and backend compilation boundaries.",
+        highlights: ["TypeScript", "compilation", "bundler", "strict", "safety", "boundaries"],
       },
       {
-        title: "3. Core Scripts: [Task Automation]",
-        caption: "Its core scripts coordinate testing, building, and running all other subsystems together.",
-        highlights: ["scripts", "testing", "building", "running", "subsystems"],
+        title: "3. Automation Scripts: [scripts/ & build automation]",
+        caption: "Its core scripts coordinate linting, testing, and continuous deployment, ensuring seamless inter-operation across all decoupled subsystem packages.",
+        highlights: ["scripts", "linting", "testing", "deployment", "seamless", "subsystem"],
       },
       {
-        title: "4. External Connections: [Ecosystem Integration]",
-        caption: "By keeping these shared rules in one place, every part of your project stays reliable and easy to maintain.",
-        highlights: ["shared", "rules", "reliable", "easy", "maintain"],
+        title: "4. Boundary Enforcement: [Universal Data Contracts]",
+        caption: "By centralizing shared infrastructure here, every tier of your application maintains strict boundaries, zero circular leaks, and high architectural maintainability.",
+        highlights: ["centralizing", "infrastructure", "strict", "boundaries", "zero", "leaks", "maintainability"],
       },
     ],
   },
@@ -276,17 +276,17 @@ export const ModuleReel: React.FC<ModuleReelProps> = ({
         accentColor={accentColor}
       />
 
-      {/* Futuristic HUD with top-edge progress bar (NO bottom overlap) */}
-      <HUDOverlay
-        theme={{ ...theme, accent: accentColor }}
-        repoName={analysis.name}
-        branch={analysis.branch}
-        totalCommits={analysis.totalCommits}
-        totalFiles={analysis.totalFiles}
-        currentSceneTitle={currentStep.title}
-        currentSceneSubtitle={`${moduleInfo.name} • ${moduleInfo.fileCount} files • ${moduleInfo.loc} LOC`}
-        progress={progress}
-      />
+      {/* Top glowing progress bar (Clean edge without colliding header badges) */}
+      <div className="absolute top-0 left-0 right-0 h-2 bg-white/10 overflow-hidden z-50 pointer-events-none">
+        <div
+          className="h-full transition-all duration-75"
+          style={{
+            width: `${Math.min(100, Math.max(0, progress * 100))}%`,
+            backgroundColor: accentColor,
+            boxShadow: `0 0 20px ${accentColor}`,
+          }}
+        />
+      </div>
     </AbsoluteFill>
   );
 };

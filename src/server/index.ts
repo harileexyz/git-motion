@@ -8,6 +8,7 @@ import { analyzeGitRepo, enrichFilesWithGit } from "./git";
 import { renderVideoToFile } from "./renderer";
 import { RepoAnalysis } from "../core/types";
 import { generateArchitectureHtml } from "../core/htmlBlueprint";
+import { generateTechnicalDesignHtml } from "../core/technicalDesign";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -81,14 +82,33 @@ export function createServer(options: ServerOptions = {}) {
     }
   });
 
+  // Static audio assets for neural narration
+  const publicAudioPath = path.resolve(repoPath, "public/audio");
+  if (fs.existsSync(publicAudioPath)) {
+    app.use("/audio", express.static(publicAudioPath));
+  }
+
   app.get("/api/architecture.html", (req, res) => {
     try {
       const analysis = getOrComputeAnalysis();
-      const html = generateArchitectureHtml(analysis);
+      const moduleId = req.query.module as string | undefined;
+      const html = generateArchitectureHtml(analysis, moduleId);
       res.setHeader("Content-Type", "text/html");
       res.send(html);
     } catch (err: any) {
       res.status(500).send(`Error generating architecture: ${err.message}`);
+    }
+  });
+
+  app.get("/api/technical-design.html", (req, res) => {
+    try {
+      const analysis = getOrComputeAnalysis();
+      const moduleId = req.query.module as string | undefined;
+      const html = generateTechnicalDesignHtml(analysis, moduleId);
+      res.setHeader("Content-Type", "text/html");
+      res.send(html);
+    } catch (err: any) {
+      res.status(500).send(`Error generating technical design: ${err.message}`);
     }
   });
 

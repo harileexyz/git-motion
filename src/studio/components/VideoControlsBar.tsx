@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import { PlayerRef } from "@remotion/player";
 import {
   Play,
@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 
 interface VideoControlsBarProps {
-  playerRef: React.RefObject<PlayerRef | null>;
+  player: PlayerRef | null;
   durationFrames: number;
   mode: "overview" | "module";
   aspectRatio: "16:9" | "9:16";
@@ -26,7 +26,7 @@ interface VideoControlsBarProps {
 }
 
 export const VideoControlsBar: React.FC<VideoControlsBarProps> = ({
-  playerRef,
+  player,
   durationFrames,
   mode,
   aspectRatio,
@@ -42,10 +42,10 @@ export const VideoControlsBar: React.FC<VideoControlsBarProps> = ({
   const [volume, setVolume] = useState(1);
   const [isMuted, setIsMuted] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1);
+  const isDraggingRef = useRef(false);
 
-  // Subscribe to player events locally - only this bar re-renders at 30fps!
+  // Bind player events when player instance is available
   useEffect(() => {
-    const player = playerRef.current;
     if (!player) return;
 
     const onPlay = () => {
@@ -57,7 +57,9 @@ export const VideoControlsBar: React.FC<VideoControlsBarProps> = ({
       onPlayStateChange?.(false);
     };
     const onFrame = (e: any) => {
-      setCurrentFrame(e.detail.frame);
+      if (!isDraggingRef.current) {
+        setCurrentFrame(e.detail.frame);
+      }
     };
     const onVolume = (e: any) => {
       setVolume(e.detail.volume);
@@ -69,23 +71,48 @@ export const VideoControlsBar: React.FC<VideoControlsBarProps> = ({
     player.addEventListener("frameupdate", onFrame);
     player.addEventListener("volumechange", onVolume);
 
+    // Initial sync
+    try {
+      setIsPlaying(player.isPlaying());
+      setCurrentFrame(player.getCurrentFrame());
+    } catch {}
+
     return () => {
       player.removeEventListener("play", onPlay);
       player.removeEventListener("pause", onPause);
       player.removeEventListener("frameupdate", onFrame);
       player.removeEventListener("volumechange", onVolume);
     };
-  }, [playerRef, onPlayStateChange]);
+  }, [player, onPlayStateChange]);
+
+  // High-performance requestAnimationFrame loop to guarantee 60fps scrubber sync
+  useEffect(() => {
+    if (!player || !isPlaying) return;
+    let animId: number;
+
+    const tick = () => {
+      if (!isDraggingRef.current) {
+        try {
+          const f = player.getCurrentFrame();
+          setCurrentFrame(f);
+        } catch {}
+      }
+      animId = requestAnimationFrame(tick);
+    };
+
+    animId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(animId);
+  }, [player, isPlaying]);
 
   const togglePlay = () => {
-    if (!playerRef.current) return;
+    if (!player) return;
     try {
-      if (playerRef.current.isPlaying()) {
-        playerRef.current.pause();
+      if (player.isPlaying()) {
+        player.pause();
         setIsPlaying(false);
         onPlayStateChange?.(false);
       } else {
-        playerRef.current.play();
+        player.play();
         setIsPlaying(true);
         onPlayStateChange?.(true);
       }
@@ -93,10 +120,10 @@ export const VideoControlsBar: React.FC<VideoControlsBarProps> = ({
   };
 
   const handleSeek = (targetFrame: number) => {
-    if (!playerRef.current) return;
+    if (!player) return;
     const clamped = Math.max(0, Math.min(durationFrames - 1, targetFrame));
     try {
-      playerRef.current.seekTo(clamped);
+      player.seekTo(clamped);
     } catch {}
     setCurrentFrame(clamped);
   };
@@ -106,34 +133,34 @@ export const VideoControlsBar: React.FC<VideoControlsBarProps> = ({
   };
 
   const toggleMute = () => {
-    if (!playerRef.current) return;
+    if (!player) return;
     try {
       if (isMuted) {
-        playerRef.current.unmute();
+        player.unmute();
         setIsMuted(false);
       } else {
-        playerRef.current.mute();
+        player.mute();
         setIsMuted(true);
       }
     } catch {}
   };
 
   const handleVolumeChange = (newVol: number) => {
-    if (!playerRef.current) return;
+    if (!player) return;
     try {
-      playerRef.current.setVolume(newVol);
+      player.setVolume(newVol);
       setVolume(newVol);
       if (newVol > 0 && isMuted) {
-        playerRef.current.unmute();
+        player.unmute();
         setIsMuted(false);
       }
     } catch {}
   };
 
   const handleRateChange = (rate: number) => {
-    if (!playerRef.current) return;
+    if (!player) return;
     try {
-      playerRef.current.setPlaybackRate(rate);
+      player.setPlaybackRate(rate);
       setPlaybackRate(rate);
     } catch {}
   };
@@ -145,23 +172,23 @@ export const VideoControlsBar: React.FC<VideoControlsBarProps> = ({
     return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
 
-  // Chapter markers based on stitched Kokoro audio frames
+  // Chapter markers based on Kokoro neural audio frame points
   const chapterSteps = useMemo(() => {
     if (mode === "overview") {
       return [
-        { label: "1. Start", frame: 0 },
-        { label: "2. AST Scan", frame: 243 },
-        { label: "3. 4 Tiers", frame: 459 },
-        { label: "4. Video", frame: 691 },
+        { label: "1. Boot", frame: 0 },
+        { label: "2. AST Scan", frame: 443 },
+        { label: "3. 4 Tiers", frame: 884 },
+        { label: "4. 60fps Reel", frame: 1238 },
       ];
     }
     return [
       { label: "1. Setup", frame: 0 },
-      { label: "2. AST Scan", frame: 250 },
-      { label: "3. Mechanics", frame: 490 },
-      { label: "4. Outputs", frame: 700 },
+      { label: "2. AST Scanner", frame: Math.round(durationFrames * 0.25) },
+      { label: "3. Under The Hood", frame: Math.round(durationFrames * 0.52) },
+      { label: "4. Outputs & Cache", frame: Math.round(durationFrames * 0.78) },
     ];
-  }, [mode]);
+  }, [mode, durationFrames]);
 
   return (
     <div className="w-full bg-[#0c111c]/95 border border-slate-800/90 rounded-2xl p-3 sm:px-4 shadow-xl backdrop-blur-md flex flex-col gap-2.5">
@@ -173,10 +200,22 @@ export const VideoControlsBar: React.FC<VideoControlsBarProps> = ({
             min={0}
             max={durationFrames - 1}
             value={currentFrame}
+            onMouseDown={() => {
+              isDraggingRef.current = true;
+            }}
+            onMouseUp={() => {
+              isDraggingRef.current = false;
+            }}
+            onTouchStart={() => {
+              isDraggingRef.current = true;
+            }}
+            onTouchEnd={() => {
+              isDraggingRef.current = false;
+            }}
             onChange={(e) => handleSeek(Number(e.target.value))}
-            className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-400 focus:outline-none transition-all"
+            className="w-full h-2.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-400 focus:outline-none transition-all hover:h-3"
             style={{
-              background: `linear-gradient(to right, #06b6d4 0%, #06b6d4 ${(currentFrame / (durationFrames - 1)) * 100}%, #1e293b ${(currentFrame / (durationFrames - 1)) * 100}%, #1e293b 100%)`,
+              background: `linear-gradient(to right, #06b6d4 0%, #06b6d4 ${(currentFrame / Math.max(1, durationFrames - 1)) * 100}%, #1e293b ${(currentFrame / Math.max(1, durationFrames - 1)) * 100}%, #1e293b 100%)`,
             }}
           />
         </div>
@@ -191,7 +230,7 @@ export const VideoControlsBar: React.FC<VideoControlsBarProps> = ({
                 className={`px-2 py-0.5 rounded border transition flex items-center gap-1 ${
                   currentFrame >= step.frame &&
                   (idx === chapterSteps.length - 1 || currentFrame < chapterSteps[idx + 1].frame)
-                    ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/40 font-semibold"
+                    ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/40 font-semibold shadow-sm"
                     : "bg-slate-900/60 text-slate-400 border-slate-800 hover:text-white hover:border-slate-700"
                 }`}
               >
@@ -216,7 +255,7 @@ export const VideoControlsBar: React.FC<VideoControlsBarProps> = ({
         <div className="flex items-center gap-2">
           <button
             onClick={togglePlay}
-            className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-black font-bold text-xs flex items-center gap-1.5 shadow-md shadow-cyan-500/20 transition active:scale-95"
+            className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-black font-bold text-xs flex items-center gap-1.5 shadow-md shadow-cyan-500/20 transition active:scale-95"
             title={isPlaying ? "Pause (Space)" : "Play (Space)"}
           >
             {isPlaying ? <Pause className="w-4 h-4 fill-black" /> : <Play className="w-4 h-4 fill-black" />}

@@ -20,6 +20,7 @@ import {
   Volume2,
   Play,
   Pause,
+  BookOpen,
   Maximize2,
   Minimize2,
   ChevronLeft,
@@ -43,14 +44,15 @@ export const App: React.FC = () => {
   const [aspectRatio, setAspectRatio] = useState<"16:9" | "9:16">("16:9");
   const [isExporting, setIsExporting] = useState(false);
   const [exportMessage, setExportMessage] = useState<string | null>(null);
-  const [viewTab, setViewTab] = useState<"video" | "blueprint" | "mermaid">("video");
+  const [viewTab, setViewTab] = useState<"video" | "blueprint" | "design" | "mermaid">("video");
   const [copiedMermaid, setCopiedMermaid] = useState(false);
   const [showLeftSidebar, setShowLeftSidebar] = useState(true);
   const [showRightSidebar, setShowRightSidebar] = useState(true);
   const [theaterMode, setTheaterMode] = useState(false);
 
-  // Video Player Ref & Overlay state
+  // Video Player Ref & Instance state
   const playerRef = useRef<PlayerRef>(null);
+  const [playerInstance, setPlayerInstance] = useState<PlayerRef | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
   // Fetch analysis from local API server
@@ -157,7 +159,29 @@ export const App: React.FC = () => {
 
   const compWidth = aspectRatio === "16:9" ? 1920 : 1080;
   const compHeight = aspectRatio === "16:9" ? 1080 : 1920;
-  const durationFrames = mode === "overview" ? 880 : 910;
+
+  // Dynamic duration matching exact unified Kokoro narration
+  const durationFrames = useMemo(() => {
+    if (mode === "overview") return 1564;
+    const id = (selectedModuleId || "").toLowerCase();
+    if (id.includes("server")) return 1826;
+    if (id.includes("core")) return 1532;
+    if (id.includes("remotion")) return 1541;
+    if (id.includes("cli")) return 1281;
+    if (id.includes("studio")) return 1409;
+    return 1192;
+  }, [mode, selectedModuleId]);
+
+  // URLs for Module-Specific Blueprint and Technical Design
+  const blueprintUrl = useMemo(() => {
+    if (mode === "overview" || !selectedModuleId) return "/api/architecture.html";
+    return `/api/architecture.html?module=${encodeURIComponent(selectedModuleId)}`;
+  }, [mode, selectedModuleId]);
+
+  const technicalDesignUrl = useMemo(() => {
+    if (mode === "overview" || !selectedModuleId) return "/api/technical-design.html";
+    return `/api/technical-design.html?module=${encodeURIComponent(selectedModuleId)}`;
+  }, [mode, selectedModuleId]);
 
   // Memoize input props to guarantee reference stability and prevent re-render storms
   const overviewInputProps = useMemo(() => {
@@ -227,7 +251,7 @@ export const App: React.FC = () => {
               onClick={() => setViewTab("blueprint")}
               className={`px-3 py-1.5 rounded-lg font-semibold flex items-center gap-2 transition ${
                 viewTab === "blueprint"
-                  ? "bg-cyan-500 text-black shadow-md shadow-cyan-500/20"
+                  ? "bg-cyan-500 text-black shadow-md shadow-cyan-500/20 font-bold"
                   : "text-slate-400 hover:text-white"
               }`}
             >
@@ -235,10 +259,21 @@ export const App: React.FC = () => {
               <span>System Blueprint (HTML)</span>
             </button>
             <button
+              onClick={() => setViewTab("design")}
+              className={`px-3 py-1.5 rounded-lg font-semibold flex items-center gap-2 transition ${
+                viewTab === "design"
+                  ? "bg-cyan-500 text-black shadow-md shadow-cyan-500/20 font-bold"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>Technical Design (as built)</span>
+            </button>
+            <button
               onClick={() => setViewTab("mermaid")}
               className={`px-3 py-1.5 rounded-lg font-semibold flex items-center gap-2 transition ${
                 viewTab === "mermaid"
-                  ? "bg-cyan-500 text-black shadow-md shadow-cyan-500/20"
+                  ? "bg-cyan-500 text-black shadow-md shadow-cyan-500/20 font-bold"
                   : "text-slate-400 hover:text-white"
               }`}
             >
@@ -462,7 +497,10 @@ export const App: React.FC = () => {
                   }}
                 >
                   <Player
-                    ref={playerRef}
+                    ref={(inst) => {
+                      playerRef.current = inst;
+                      setPlayerInstance(inst);
+                    }}
                     key={`${mode}-${selectedModuleId}-${aspectRatio}`}
                     component={mode === "overview" ? RepoReel : ModuleReel}
                     inputProps={(mode === "overview" ? overviewInputProps : moduleInputProps) as any}
@@ -494,7 +532,7 @@ export const App: React.FC = () => {
 
                 {/* DEDICATED VIDEO PLAYER CONTROLLER BAR (Isolated state to eliminate re-renders) */}
                 <VideoControlsBar
-                  playerRef={playerRef}
+                  player={playerInstance}
                   durationFrames={durationFrames}
                   mode={mode}
                   aspectRatio={aspectRatio}
@@ -515,21 +553,27 @@ export const App: React.FC = () => {
                 )}
               </div>
             ) : viewTab === "blueprint" ? (
-              /* System Blueprint View (like reference forge-architecture.html) */
+              /* System Blueprint View (Whole App or Selected Module) */
               <div className="w-full h-full flex flex-col justify-between py-1">
                 <div className="flex items-center justify-between mb-3 px-1">
                   <div>
                     <h2 className="text-xl font-bold text-white flex items-center gap-2 font-['Roboto',sans-serif]">
                       <span>🏗️</span>
-                      <span>System Architecture Blueprint</span>
+                      <span>
+                        {mode === "overview"
+                          ? "System Architecture Blueprint (Whole App)"
+                          : `Subsystem Blueprint: [${activeModule?.name || selectedModuleId}]`}
+                      </span>
                     </h2>
                     <p className="text-xs text-slate-400 mt-0.5">
-                      Visual system architecture with local boundaries, numbered step sequences, and data lanes
+                      {mode === "overview"
+                        ? "Visual whole-app architecture with local boundaries, numbered step sequences, and section audio narration"
+                        : `Visual execution blueprint with inbound callers, internal pipeline stages, and outbound dependencies for ${activeModule?.name}`}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <a
-                      href="/api/architecture.html"
+                      href={blueprintUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="px-4 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black text-xs font-bold flex items-center gap-2 shadow-lg shadow-cyan-500/20 transition"
@@ -542,8 +586,50 @@ export const App: React.FC = () => {
 
                 <div className="flex-1 bg-[#090e17] border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
                   <iframe
-                    src="/api/architecture.html"
+                    key={blueprintUrl}
+                    src={blueprintUrl}
                     title="System Architecture Blueprint"
+                    className="w-full h-full border-0"
+                  />
+                </div>
+              </div>
+            ) : viewTab === "design" ? (
+              /* Technical Design View (Whole App or Selected Module) */
+              <div className="w-full h-full flex flex-col justify-between py-1">
+                <div className="flex items-center justify-between mb-3 px-1">
+                  <div>
+                    <h2 className="text-xl font-bold text-white flex items-center gap-2 font-['Roboto',sans-serif]">
+                      <span>📐</span>
+                      <span>
+                        {mode === "overview"
+                          ? "Git-Motion Technical Design Document (As Built)"
+                          : `Subsystem Technical Design: [${activeModule?.name || selectedModuleId}]`}
+                      </span>
+                    </h2>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      {mode === "overview"
+                        ? "Production engineering design: 4-tier plane architecture, AST extraction, Git churn mechanics, and Remotion 60fps canvas"
+                        : `Engineering design specification: role, coupling metric, 4-stage execution spine, code mechanics, and file churn for ${activeModule?.name}`}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <a
+                      href={technicalDesignUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black text-xs font-bold flex items-center gap-2 shadow-lg shadow-cyan-500/20 transition"
+                    >
+                      <span>Open in New Tab</span>
+                      <ArrowUpRight className="w-3.5 h-3.5" />
+                    </a>
+                  </div>
+                </div>
+
+                <div className="flex-1 bg-[#090e17] border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
+                  <iframe
+                    key={technicalDesignUrl}
+                    src={technicalDesignUrl}
+                    title="Git-Motion Technical Design"
                     className="w-full h-full border-0"
                   />
                 </div>

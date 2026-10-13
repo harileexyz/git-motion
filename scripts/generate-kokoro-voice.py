@@ -21,142 +21,142 @@ class FloatSpeedSession:
         inputs['speed'] = np.array([self.speed], dtype=np.float32)
         return self.session.run(outputs, inputs)
 
-# Plain English, under-the-hood explanations for overview and every subsystem
+# Deep, production-grade engineering explanations directly drawn from git-motion-technical-design.html
 SCRIPTS = [
     # --- Whole Repository Walkthrough ---
     {
         "id": "step1",
-        "text": "When you run git motion, it starts right on your computer. It opens a local web server and studio so you can see your project immediately."
+        "text": "When git motion starts, it runs locally on your workstation with zero cloud dependencies. It boots an Express daemon on port 4321 and mounts the Vite studio interface for immediate architectural inspection."
     },
     {
         "id": "step2",
-        "text": "Next, git motion reads your code files to see how they connect, and checks your git history to find the most active files."
+        "text": "Next, the ingestion pipeline traverses your repository with multi language AST token parsers. It maps file import edges and calculates git churn scores using normalized commit frequency and line alterations."
     },
     {
         "id": "step3",
-        "text": "Then, it organizes your codebase into four simple layers: your entry points, the server, the core engine, and the video renderer."
+        "text": "Then, the core architecture engine partitions the codebase into four clean tiers: entry points, transport orchestration, foundational domain models, and presentation rendering leaves."
     },
     {
         "id": "step4",
-        "text": "Finally, it turns this blueprint into a smooth video that shows how your project works from start to finish."
+        "text": "Finally, it compiles an interactive SVG architectural blueprint and renders sixty frames per second motion graphics with traveling light beams and neural voiceover narration."
     },
 
-    # --- Server Subsystem ---
+    # --- Server Subsystem (src/server) ---
     {
         "id": "server_step1",
-        "text": "Inside the server, index dot t s starts an Express web server on port 4321 to handle all requests and render jobs."
+        "text": "Inside the server subsystem, index dot t s bootstraps an Express HTTP daemon on port 4321, binding CORS policies and registering REST endpoints for analytical queries and headless video rendering."
     },
     {
         "id": "server_step2",
-        "text": "Next, analyzer dot t s scans your project files, reading imports and exports to map out how each file connects."
+        "text": "Next, analyzer dot t s performs recursive directory scans while ignoring node modules and git. It uses language-specific regex tokenizers to extract imports across TypeScript, Python, Go, and Rust, resolving relative paths into concrete edges."
     },
     {
         "id": "server_step3",
-        "text": "Then, git dot t s runs git commands in the background to count commits and highlight the most frequently edited files."
+        "text": "Then, git dot t s spawns a child process to execute git log with numstat. It scores file velocity using the normalized formula sixty-five percent commit frequency plus thirty-five percent line deltas to spotlight critical code hotspots."
     },
     {
         "id": "server_step4",
-        "text": "Finally, it stores this complete project map in memory and serves it instantly to your web browser."
+        "text": "Finally, it constructs the universal RepoAnalysis data model, caching file nodes and dependency links in memory to instantly feed both the web studio and the Remotion video engine."
     },
 
-    # --- Core Subsystem ---
+    # --- Core Subsystem (src/core) ---
     {
         "id": "core_step1",
-        "text": "The core folder holds the main blueprints. In types dot t s, it defines what files, modules, and connections look like."
+        "text": "The core subsystem defines the architectural schema in types dot t s, establishing strongly typed contracts for FileNode, ModuleCluster, and DependencyLink with zero external dependencies."
     },
     {
         "id": "core_step2",
-        "text": "Next, architecture dot t s sorts your code into four simple tiers, separating your entry points from deep processing logic."
+        "text": "Next, architecture dot t s groups files into four hierarchical tiers: entry points with high outbound calls, orchestration servers, foundational domain data models, and output rendering leaves."
     },
     {
         "id": "core_step3",
-        "text": "Then, it calculates coupling scores to show which modules rely heavily on each other and which stand on their own."
+        "text": "Then, it calculates module coupling ratios by dividing outbound dependencies by total connections, identifying tightly coupled orchestration layers versus independent foundational libraries."
     },
     {
         "id": "core_step4",
-        "text": "Finally, mermaid dot t s builds visual flowcharts and interactive diagrams so anyone can understand your app at a glance."
+        "text": "Finally, htmlBlueprint dot t s compiles interactive standalone SVG system blueprints with themed zone boundaries, data lanes, and travelling photon pulse animations."
     },
 
-    # --- Remotion Subsystem ---
+    # --- Remotion Subsystem (src/remotion) ---
     {
         "id": "remotion_step1",
-        "text": "The remotion folder handles video creation. In Root dot t s, it sets up widescreen and vertical video layouts at sixty frames per second."
+        "text": "The remotion subsystem houses sixty frames per second video compositions in Root dot t s, configuring landscape nineteen-twenty by ten-eighty and vertical ten-eighty by nineteen-twenty viewports."
     },
     {
         "id": "remotion_step2",
-        "text": "Next, the animated diagram draws glowing light pulses that travel across your code connections to show live data flow."
+        "text": "Next, AnimatedArchitectureDiagram dot t s x computes SVG cubic bezier paths between modules, interpolating photon light pulses across connection curves as a pure mathematical function of the current frame."
     },
     {
         "id": "remotion_step3",
-        "text": "Then, the camera pans smoothly across each section while a clean progress bar tracks the timeline at the top."
+        "text": "Then, KineticCaptionBar dot t s x renders word-by-word subtitles with dynamic glowing backgrounds, highlighting critical technical keywords in real time as the neural voiceover speaks."
     },
     {
         "id": "remotion_step4",
-        "text": "Finally, the captions bar plays natural voice narration and highlights each word in real time as it speaks."
+        "text": "Finally, spring and interpolate hooks smoothly pan and zoom the camera into active subsystem boundaries, synchronized with a top glowing progress bar and zero audio stutter."
     },
 
-    # --- CLI Subsystem ---
+    # --- CLI Subsystem (src/cli) ---
     {
         "id": "cli_step1",
-        "text": "The c l i is your command line entry point. In bin dot t s, it understands commands like analyze, preview, and render."
+        "text": "In bin dot t s, the commander CLI handles flags like port, theme, and headless render, validating the working tree and locating the root git repository marker."
     },
     {
         "id": "cli_step2",
-        "text": "Next, it checks that you are inside a git repository and prepares the project for scanning."
+        "text": "Next, it verifies local repository integrity, builds the server and client bundles, and spawns the background Express daemon on an available local port."
     },
     {
         "id": "cli_step3",
-        "text": "Then, it launches the background server and automatically opens the studio dashboard in your browser."
+        "text": "Then, it automatically opens your default web browser to localhost 4321, connecting you directly to the interactive studio cockpit."
     },
     {
         "id": "cli_step4",
-        "text": "Finally, it can export high quality video walkthroughs directly from your terminal without opening a browser."
+        "text": "Finally, it supports headless batch rendering, compiling sixty frames per second MP4 architecture walkthroughs directly from CI/CD without requiring a browser window."
     },
 
-    # --- Studio Subsystem ---
+    # --- Studio Subsystem (src/studio) ---
     {
         "id": "studio_step1",
-        "text": "The studio is the interactive web dashboard. Built with React and Vite, it launches instantly in your browser."
+        "text": "The studio plane provides an interactive developer cockpit built with React and Vite, featuring zero-lag responsive layout and hot module reloading."
     },
     {
         "id": "studio_step2",
-        "text": "In App dot t s x, it embeds the video player with easy controls to play, pause, and scrub through the timeline."
+        "text": "In VideoControlsBar dot t s x, player state is strictly isolated from parent components, using a sixty frames per second animation frame loop to guarantee butter-smooth scrubbing without re-render storms."
     },
     {
         "id": "studio_step3",
-        "text": "It also displays the full interactive architecture blueprint, letting you click on any subsystem to see how it works."
+        "text": "Next, App dot t s x lets engineers switch instantly between the cinematic video walkthrough, the interactive SVG blueprint, the production technical design document, and raw Mermaid diagrams."
     },
     {
         "id": "studio_step4",
-        "text": "From here, you can switch between the full project view and individual modules, or export a video with one click."
+        "text": "Finally, engineers can filter subsystems, inspect inbound callers and outbound dependencies, customize visual themes, and export high-definition video walkthroughs with one click."
     },
 
     # --- Root / Generic Module Fallback ---
     {
         "id": "module_step1",
-        "text": "This module organizes the foundation of your project, including configuration files and build settings."
+        "text": "This module organizes the foundation of your project workspace, declaring environment configuration, root dependency manifests, and build automation pipelines."
     },
     {
         "id": "module_step2",
-        "text": "Inside, it sets up packages, compilation rules, and styling to keep your entire app running smoothly."
+        "text": "Inside, TypeScript compilation targets and bundler configurations ensure strict type safety across both frontend and backend compilation boundaries."
     },
     {
         "id": "module_step3",
-        "text": "Its core scripts coordinate testing, building, and running all other subsystems together."
+        "text": "Its core scripts coordinate linting, testing, and continuous deployment, ensuring seamless inter-operation across all decoupled subsystem packages."
     },
     {
         "id": "module_step4",
-        "text": "By keeping these shared rules in one place, every part of your project stays reliable and easy to maintain."
+        "text": "By centralizing shared infrastructure here, every tier of your application maintains strict boundaries, zero circular leaks, and high architectural maintainability."
     }
 ]
 
 def main():
-    print("🎙️ Generating Kokoro af_heart under-the-hood narration...")
+    print("🎙️ Generating deep engineering Kokoro af_heart narration...")
     onnx_path = os.path.join(MODEL_DIR, "kokoro-v1.0.onnx")
     voices_path = os.path.join(MODEL_DIR, "voices-v1.0.bin")
 
     engine = Kokoro(onnx_path, voices_path)
-    engine.sess = FloatSpeedSession(engine.sess, 1.10)
+    engine.sess = FloatSpeedSession(engine.sess, 1.05)
 
     stats = []
 
@@ -166,7 +166,7 @@ def main():
         out_wav = os.path.join(OUT_DIR, f"{stem}.wav")
         out_mp3 = os.path.join(OUT_DIR, f"{stem}.mp3")
 
-        samples, rate = engine.create(text, voice="af_heart", speed=1.10, lang="en-us")
+        samples, rate = engine.create(text, voice="af_heart", speed=1.05, lang="en-us")
         sf.write(out_wav, samples, rate)
         duration = len(samples) / rate
         frames = int(round(duration * 30))

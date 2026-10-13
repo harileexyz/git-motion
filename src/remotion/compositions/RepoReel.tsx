@@ -21,43 +21,43 @@ export const RepoReel: React.FC<RepoReelProps> = ({
 
   const progress = frame / durationInFrames;
 
-  // Exact step frame boundaries from stitched Kokoro narration: [0, 243, 459, 691]
+  // Exact step frame boundaries from stitched Kokoro narration: [0, 443, 884, 1238]
   let activeStep = 0;
-  let sceneTitle = "1. Starting Point";
-  let sceneSubtitle = "Runs on your laptop";
+  let sceneTitle = "1. Ingestion & Workspace Boot";
+  let sceneSubtitle = "Local workstation runtime";
   let captionText =
-    "When you run git motion, it starts right on your computer. It opens a local web server and studio so you can see your project immediately.";
-  let highlightWords = ["git motion", "computer", "local", "web", "server", "studio", "immediately"];
+    "When git motion starts, it runs locally on your workstation with zero cloud dependencies. It boots an Express daemon on port 4321 and mounts the Vite studio interface for immediate architectural inspection.";
+  let highlightWords = ["git motion", "locally", "workstation", "zero", "cloud", "Express", "daemon", "4321", "Vite", "studio", "architectural"];
   let accentColor = "#38bdf8"; // Sky Blue
 
-  if (frame >= 243 && frame < 459) {
+  if (frame >= 443 && frame < 884) {
     activeStep = 1;
-    sceneTitle = "2. Scanning Your Files";
-    sceneSubtitle = "Reads imports & Git churn";
+    sceneTitle = "2. AST Scanner & Git Churn";
+    sceneSubtitle = "Multi-language token parsing";
     captionText =
-      "Next, git motion reads your code files to see how they connect, and checks your git history to find the most active files.";
-    highlightWords = ["reads", "code", "files", "connect", "git", "history", "active"];
+      "Next, the ingestion pipeline traverses your repository with multi language AST token parsers. It maps file import edges and calculates git churn scores using normalized commit frequency and line alterations.";
+    highlightWords = ["ingestion", "pipeline", "traverses", "multi", "language", "AST", "token", "parsers", "churn", "commit", "frequency", "alterations"];
     accentColor = "#00f3ff"; // Cyan
-  } else if (frame >= 459 && frame < 691) {
+  } else if (frame >= 884 && frame < 1238) {
     activeStep = 2;
-    sceneTitle = "3. Organizing The Code";
-    sceneSubtitle = "Four simple layers";
+    sceneTitle = "3. 4-Tier Subsystem Classifier";
+    sceneSubtitle = "Hierarchical architectural modeling";
     captionText =
-      "Then, it organizes your codebase into four simple layers: your entry points, the server, the core engine, and the video renderer.";
-    highlightWords = ["organizes", "four", "simple", "layers", "entry", "points", "server", "core", "renderer"];
+      "Then, the core architecture engine partitions the codebase into four clean tiers: entry points, transport orchestration, foundational domain models, and presentation rendering leaves.";
+    highlightWords = ["architecture", "engine", "partitions", "four", "clean", "tiers", "entry", "points", "orchestration", "domain", "rendering", "leaves"];
     accentColor = "#ff967d"; // Coral
-  } else if (frame >= 691) {
+  } else if (frame >= 1238) {
     activeStep = 3;
-    sceneTitle = "4. Creating The Video";
-    sceneSubtitle = "Ready for your GitHub README";
+    sceneTitle = "4. 60fps Motion Graphics Canvas";
+    sceneSubtitle = "Travelling Bezier light beams & Narration";
     captionText =
-      "Finally, it turns this blueprint into a smooth video that shows how your project works from start to finish.";
-    highlightWords = ["blueprint", "smooth", "video", "project", "works", "start", "finish"];
+      "Finally, it compiles an interactive SVG architectural blueprint and renders sixty frames per second motion graphics with traveling light beams and neural voiceover narration.";
+    highlightWords = ["compiles", "interactive", "SVG", "blueprint", "sixty", "frames", "motion", "graphics", "light", "beams", "neural", "narration"];
     accentColor = "#c4ff78"; // Mint
   }
 
   // Outro opacity
-  const outroOpacity = interpolate(frame, [810, 850], [0, 1], {
+  const outroOpacity = interpolate(frame, [1500, 1550], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
