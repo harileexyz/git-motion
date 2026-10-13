@@ -40,7 +40,7 @@ export const App: React.FC = () => {
   const [aspectRatio, setAspectRatio] = useState<"16:9" | "9:16">("16:9");
   const [isExporting, setIsExporting] = useState(false);
   const [exportMessage, setExportMessage] = useState<string | null>(null);
-  const [viewTab, setViewTab] = useState<"video" | "mermaid">("video");
+  const [viewTab, setViewTab] = useState<"video" | "blueprint" | "mermaid">("video");
   const [copiedMermaid, setCopiedMermaid] = useState(false);
   const [showLeftSidebar, setShowLeftSidebar] = useState(true);
   const [showRightSidebar, setShowRightSidebar] = useState(true);
@@ -150,7 +150,7 @@ export const App: React.FC = () => {
 
   const compWidth = aspectRatio === "16:9" ? 1920 : 1080;
   const compHeight = aspectRatio === "16:9" ? 1080 : 1920;
-  const durationFrames = mode === "overview" ? 1020 : 625;
+  const durationFrames = mode === "overview" ? 1060 : 900;
 
   return (
     <div className="flex flex-col h-screen bg-[#090d16] text-slate-100 font-sans overflow-hidden">
@@ -186,6 +186,17 @@ export const App: React.FC = () => {
               <Film className="w-3.5 h-3.5" />
               <span>Animated Reel</span>
               <Volume2 className="w-3 h-3 opacity-60" />
+            </button>
+            <button
+              onClick={() => setViewTab("blueprint")}
+              className={`px-3 py-1.5 rounded-lg font-semibold flex items-center gap-2 transition ${
+                viewTab === "blueprint"
+                  ? "bg-cyan-500 text-black shadow-md shadow-cyan-500/20"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <Layers className="w-3.5 h-3.5" />
+              <span>System Blueprint (HTML)</span>
             </button>
             <button
               onClick={() => setViewTab("mermaid")}
@@ -416,8 +427,12 @@ export const App: React.FC = () => {
                       compositionHeight={compHeight}
                       fps={30}
                       controls
+                      clickToPlay
+                      doubleClickToFullscreen
+                      spaceKeyToPlay
+                      showVolumeControls
                       loop
-                      className="w-full h-full object-contain"
+                      className="w-full h-full object-contain cursor-pointer"
                     />
                   ) : (
                     <Player
@@ -432,8 +447,12 @@ export const App: React.FC = () => {
                       compositionHeight={compHeight}
                       fps={30}
                       controls
+                      clickToPlay
+                      doubleClickToFullscreen
+                      spaceKeyToPlay
+                      showVolumeControls
                       loop
-                      className="w-full h-full object-contain"
+                      className="w-full h-full object-contain cursor-pointer"
                     />
                   )}
                 </div>
@@ -445,6 +464,40 @@ export const App: React.FC = () => {
                     {exportMessage}
                   </div>
                 )}
+              </div>
+            ) : viewTab === "blueprint" ? (
+              /* System Blueprint View (like reference forge-architecture.html) */
+              <div className="w-full h-full flex flex-col justify-between py-1">
+                <div className="flex items-center justify-between mb-3 px-1">
+                  <div>
+                    <h2 className="text-xl font-bold text-white flex items-center gap-2 font-['Roboto',sans-serif]">
+                      <span>🏗️</span>
+                      <span>System Architecture Blueprint</span>
+                    </h2>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      Visual system architecture with local boundaries, numbered step sequences, and data lanes
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <a
+                      href="/api/architecture.html"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black text-xs font-bold flex items-center gap-2 shadow-lg shadow-cyan-500/20 transition"
+                    >
+                      <span>Open in New Tab</span>
+                      <ArrowUpRight className="w-3.5 h-3.5" />
+                    </a>
+                  </div>
+                </div>
+
+                <div className="flex-1 bg-[#090e17] border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
+                  <iframe
+                    src="/api/architecture.html"
+                    title="System Architecture Blueprint"
+                    className="w-full h-full border-0"
+                  />
+                </div>
               </div>
             ) : (
               /* Mermaid Architecture Diagram View */

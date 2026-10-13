@@ -7,6 +7,7 @@ import { scanRepository } from "./analyzer";
 import { analyzeGitRepo, enrichFilesWithGit } from "./git";
 import { renderVideoToFile } from "./renderer";
 import { RepoAnalysis } from "../core/types";
+import { generateArchitectureHtml } from "../core/htmlBlueprint";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -77,6 +78,17 @@ export function createServer(options: ServerOptions = {}) {
       res.json(analysis.modules);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get("/api/architecture.html", (req, res) => {
+    try {
+      const analysis = getOrComputeAnalysis();
+      const html = generateArchitectureHtml(analysis);
+      res.setHeader("Content-Type", "text/html");
+      res.send(html);
+    } catch (err: any) {
+      res.status(500).send(`Error generating architecture: ${err.message}`);
     }
   });
 

@@ -2,8 +2,7 @@ import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, Audio, Sequence, staticFile } from "remotion";
 import { RepoAnalysis, ThemePreset } from "../../core/types";
 import { THEMES } from "../themes";
-import { RepoTreeExplorer } from "../components/RepoTreeExplorer";
-import { SimpleFlowCanvas } from "../components/SimpleFlowCanvas";
+import { AnimatedArchitectureDiagram } from "../components/AnimatedArchitectureDiagram";
 import { KineticCaptionBar } from "../components/KineticCaptionBar";
 import { HUDOverlay } from "../components/HUDOverlay";
 
@@ -22,20 +21,20 @@ export const RepoReel: React.FC<RepoReelProps> = ({
 
   const progress = frame / durationInFrames;
 
-  // Exact step frame boundaries matching measured audio durations + natural pauses:
-  // Step 1: 0 -> 245 frames (audio: 232 frames)
-  // Step 2: 245 -> 520 frames (audio: 263 frames)
-  // Step 3: 520 -> 760 frames (audio: 225 frames)
-  // Step 4: 760 -> 1020 frames (audio: 233 frames)
+  // Exact step frame boundaries matching measured mp3 audio durations:
+  // Step 1: 0 -> 290 frames (step1.mp3: 276 frames)
+  // Step 2: 290 -> 550 frames (step2.mp3: 247 frames)
+  // Step 3: 550 -> 800 frames (step3.mp3: 238 frames)
+  // Step 4: 800 -> 1060 frames (step4.mp3: 233 frames)
   let activeStep = 0;
   let sceneTitle = "1. Starting Point";
   let sceneSubtitle = "Runs on your laptop";
   let captionText =
     "When you run git-motion, it starts right on your computer. You can use your terminal or open the web studio. Nothing is uploaded to the cloud.";
   let highlightWords = ["git-motion", "computer", "terminal", "web", "studio", "cloud"];
-  let accentColor = "#c4ff78"; // Semicolon Mint
+  let accentColor = "#38bdf8"; // Sky Blue
 
-  if (frame >= 245 && frame < 520) {
+  if (frame >= 290 && frame < 550) {
     activeStep = 1;
     sceneTitle = "2. Scanning Your Files";
     sceneSubtitle = "Reads imports & Git churn";
@@ -43,75 +42,64 @@ export const RepoReel: React.FC<RepoReelProps> = ({
       "Next, it quickly looks through all the files in your project. It sees which files connect to each other, and checks your Git history to find the most active files.";
     highlightWords = ["quickly", "files", "project", "connect", "Git", "history", "active"];
     accentColor = "#00f3ff"; // Cyan
-  } else if (frame >= 520 && frame < 760) {
+  } else if (frame >= 550 && frame < 800) {
     activeStep = 2;
     sceneTitle = "3. Organizing The Code";
     sceneSubtitle = "Four simple groups";
     captionText =
       "Then, it organizes your code into four simple parts: your entry points, your backend server, the core engine, and the video renderer.";
     highlightWords = ["organizes", "four", "simple", "parts", "entry", "points", "backend", "engine", "video"];
-    accentColor = "#ff967d"; // Semicolon Coral
-  } else if (frame >= 760) {
+    accentColor = "#ff967d"; // Coral
+  } else if (frame >= 800) {
     activeStep = 3;
     sceneTitle = "4. Creating The Video";
     sceneSubtitle = "Ready for your GitHub README";
     captionText =
       "Finally, it turns this blueprint into a smooth video that shows how your project works. You can save it and put it right on your GitHub page.";
     highlightWords = ["smooth", "video", "project", "save", "GitHub", "page"];
-    accentColor = "#c4ff78"; // Semicolon Mint
+    accentColor = "#c4ff78"; // Mint
   }
 
   // Outro opacity
-  const outroOpacity = interpolate(frame, [880, 940], [0, 1], {
+  const outroOpacity = interpolate(frame, [980, 1030], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
   return (
     <AbsoluteFill style={{ backgroundColor: "#0b1628" }}>
-      {/* PURE Clean Semicolon Kokoro af_heart Voice Narration (Zero background noise) */}
-      <Sequence from={0} durationInFrames={245}>
-        <Audio src={staticFile("audio/voice/step1.wav")} volume={1.0} />
+      {/* Semicolon Kokoro af_heart Voice Narration (Universal MP3, instant decode) */}
+      <Sequence from={0} durationInFrames={290}>
+        <Audio src={staticFile("audio/voice/step1.mp3")} volume={1.0} />
       </Sequence>
-      <Sequence from={245} durationInFrames={275}>
-        <Audio src={staticFile("audio/voice/step2.wav")} volume={1.0} />
+      <Sequence from={290} durationInFrames={260}>
+        <Audio src={staticFile("audio/voice/step2.mp3")} volume={1.0} />
       </Sequence>
-      <Sequence from={520} durationInFrames={240}>
-        <Audio src={staticFile("audio/voice/step3.wav")} volume={1.0} />
+      <Sequence from={550} durationInFrames={250}>
+        <Audio src={staticFile("audio/voice/step3.mp3")} volume={1.0} />
       </Sequence>
-      <Sequence from={760} durationInFrames={260}>
-        <Audio src={staticFile("audio/voice/step4.wav")} volume={1.0} />
+      <Sequence from={800} durationInFrames={260}>
+        <Audio src={staticFile("audio/voice/step4.mp3")} volume={1.0} />
       </Sequence>
 
       {/* Dynamic Background Radial Aura */}
       <div
-        className="absolute w-[800px] h-[600px] rounded-full blur-[180px] pointer-events-none opacity-20"
+        className="absolute w-[900px] h-[650px] rounded-full blur-[180px] pointer-events-none opacity-20"
         style={{
           backgroundColor: accentColor,
-          left: width / 2 - 400,
-          top: height / 2 - 300,
+          left: width / 2 - 450,
+          top: height / 2 - 325,
         }}
       />
 
-      {/* Main Split Layout: Repo Tree on Left, Flowchart Pipeline on Right */}
-      <div className="absolute inset-0 px-16 pt-24 pb-28 flex items-center justify-between gap-8 z-10 pointer-events-none">
-        {/* Left: Interactive Repo File Tree (Where files live) */}
-        <RepoTreeExplorer
-          activeStepIndex={activeStep}
-          files={analysis.files}
-          modules={analysis.modules}
-          accentColor={accentColor}
-        />
+      {/* Real Visual Architecture Diagram (like forge-architecture.html) */}
+      <AnimatedArchitectureDiagram
+        analysis={analysis}
+        theme={{ ...theme, accent: accentColor }}
+        activeStep={activeStep}
+      />
 
-        {/* Right: Simple Plain-English Pipeline Flow */}
-        <SimpleFlowCanvas
-          activeStepIndex={activeStep}
-          progress={progress}
-          accentColor={accentColor}
-        />
-      </div>
-
-      {/* Semicolon Kinetic Captions Bar (Zero overlap: cleanly placed at bottom) */}
+      {/* Semicolon Kinetic Captions Bar */}
       <KineticCaptionBar
         stepNumber={activeStep + 1}
         title={sceneTitle}

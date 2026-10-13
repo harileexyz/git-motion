@@ -56,21 +56,21 @@ export const ModuleReel: React.FC<ModuleReelProps> = ({
   let highlightWords = ["one", "part", "project", "left", "folders", "use", "code"];
   let accentColor = "#c4ff78"; // Semicolon Mint
 
-  if (frame >= 175 && frame < 325) {
+  if (frame >= 260 && frame < 500) {
     activePhase = 1;
     sceneTitle = "Files Inside This Folder";
     captionText =
       "Here in the middle are all the files inside this folder, so you can see where everything lives.";
     highlightWords = ["middle", "files", "folder", "where", "everything", "lives"];
     accentColor = "#00f3ff"; // Cyan
-  } else if (frame >= 325 && frame < 465) {
+  } else if (frame >= 500 && frame < 700) {
     activePhase = 2;
     sceneTitle = "The Main Code File";
     captionText =
       "Here is the main code file that actually does the work for this part of your app.";
     highlightWords = ["main", "code", "file", "work", "app"];
     accentColor = "#ff967d"; // Semicolon Coral
-  } else if (frame >= 465) {
+  } else if (frame >= 700) {
     activePhase = 3;
     sceneTitle = "Outside Tools It Needs";
     captionText =
@@ -81,18 +81,18 @@ export const ModuleReel: React.FC<ModuleReelProps> = ({
 
   return (
     <AbsoluteFill style={{ backgroundColor: "#0b1628" }}>
-      {/* PURE Clean Semicolon Kokoro af_heart Voice Narration (Zero background noise) */}
-      <Sequence from={0} durationInFrames={175}>
-        <Audio src={staticFile("audio/voice/module_step1.wav")} volume={1.0} />
+      {/* Semicolon Kokoro af_heart Voice Narration (Universal MP3, instant decode) */}
+      <Sequence from={0} durationInFrames={260}>
+        <Audio src={staticFile("audio/voice/module_step1.mp3")} volume={1.0} />
       </Sequence>
-      <Sequence from={175} durationInFrames={150}>
-        <Audio src={staticFile("audio/voice/module_step2.wav")} volume={1.0} />
+      <Sequence from={260} durationInFrames={240}>
+        <Audio src={staticFile("audio/voice/module_step2.mp3")} volume={1.0} />
       </Sequence>
-      <Sequence from={325} durationInFrames={140}>
-        <Audio src={staticFile("audio/voice/module_step3.wav")} volume={1.0} />
+      <Sequence from={500} durationInFrames={200}>
+        <Audio src={staticFile("audio/voice/module_step3.mp3")} volume={1.0} />
       </Sequence>
-      <Sequence from={465} durationInFrames={160}>
-        <Audio src={staticFile("audio/voice/module_step4.wav")} volume={1.0} />
+      <Sequence from={700} durationInFrames={200}>
+        <Audio src={staticFile("audio/voice/module_step4.mp3")} volume={1.0} />
       </Sequence>
 
       {/* Background radial beacon */}
