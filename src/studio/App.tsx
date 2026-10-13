@@ -18,12 +18,17 @@ import {
   Check,
   Code2,
   Volume2,
+  Maximize2,
+  Minimize2,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { RepoAnalysis, ThemePreset } from "../core/types";
 import { RepoReel } from "../remotion/compositions/RepoReel";
 import { ModuleReel } from "../remotion/compositions/ModuleReel";
 import { buildStructuredArchitecture } from "../core/architecture";
 import { generateRepoMermaid, generateModuleMermaid } from "../core/mermaid";
+import { MermaidViewer } from "./components/MermaidViewer";
 
 export const App: React.FC = () => {
   const [analysis, setAnalysis] = useState<RepoAnalysis | null>(null);
@@ -37,6 +42,9 @@ export const App: React.FC = () => {
   const [exportMessage, setExportMessage] = useState<string | null>(null);
   const [viewTab, setViewTab] = useState<"video" | "mermaid">("video");
   const [copiedMermaid, setCopiedMermaid] = useState(false);
+  const [showLeftSidebar, setShowLeftSidebar] = useState(true);
+  const [showRightSidebar, setShowRightSidebar] = useState(true);
+  const [theaterMode, setTheaterMode] = useState(false);
 
   // Fetch analysis from local API server
   const loadAnalysis = async () => {
@@ -192,6 +200,30 @@ export const App: React.FC = () => {
             </button>
           </div>
 
+          {/* Theater Mode Button */}
+          <button
+            onClick={() => {
+              if (theaterMode) {
+                setTheaterMode(false);
+                setShowLeftSidebar(true);
+                setShowRightSidebar(true);
+              } else {
+                setTheaterMode(true);
+                setShowLeftSidebar(false);
+                setShowRightSidebar(false);
+              }
+            }}
+            className={`px-3 py-1.5 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition ${
+              theaterMode
+                ? "bg-cyan-500 text-black border-cyan-400 shadow-md shadow-cyan-500/20 font-bold"
+                : "bg-slate-900/80 hover:bg-slate-800 border-slate-800 text-slate-300 hover:text-white"
+            }`}
+            title="Toggle Theater Mode (expands video to max screen size)"
+          >
+            {theaterMode ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+            <span>{theaterMode ? "Standard View" : "Theater Mode"}</span>
+          </button>
+
           <div className="h-4 w-px bg-slate-800" />
 
           {/* Repo metadata pill */}
@@ -237,110 +269,139 @@ export const App: React.FC = () => {
       {/* Main Workspace Layout */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left Sidebar: Subsystems & Modules */}
-        <aside className="w-80 border-r border-slate-800/80 bg-[#0b0f19] flex flex-col shrink-0">
-          <div className="p-4 border-b border-slate-800/80 flex flex-col gap-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                <Layers className="w-3.5 h-3.5 text-cyan-400" />
-                Target Subsystem
-              </span>
-              <span className="text-[11px] font-mono text-cyan-400 bg-cyan-950/60 px-2 py-0.5 rounded-full border border-cyan-800/40">
-                {analysis?.modules.length || 0} detected
-              </span>
-            </div>
-
-            {/* Global Overview Radio Button */}
+        {!showLeftSidebar ? (
+          <div className="w-12 border-r border-slate-800/80 bg-[#0b0f19] flex flex-col items-center py-4 shrink-0 justify-between transition-all">
             <button
-              onClick={() => setMode("overview")}
-              className={`w-full text-left p-3 rounded-xl border text-xs font-medium transition flex items-center justify-between ${
-                mode === "overview"
-                  ? "bg-cyan-500/10 border-cyan-500/40 text-cyan-300 shadow-sm"
-                  : "bg-slate-900/60 border-slate-800 text-slate-400 hover:bg-slate-800/50 hover:text-slate-200"
-              }`}
+              onClick={() => {
+                setShowLeftSidebar(true);
+                setTheaterMode(false);
+              }}
+              className="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white transition"
+              title="Expand Subsystems Panel"
             >
-              <div className="flex items-center gap-2.5">
-                <Film className="w-4 h-4 text-cyan-400" />
-                <div>
-                  <div className="font-semibold text-white">Full Repository View</div>
-                  <div className="text-[10px] text-slate-400">4-Tier System Architecture</div>
+              <ChevronRight className="w-4 h-4 text-cyan-400" />
+            </button>
+            <span className="text-[10px] uppercase font-mono tracking-widest text-slate-500 [writing-mode:vertical-rl] rotate-180">
+              Subsystems ({analysis?.modules.length || 0})
+            </span>
+            <div className="w-1 h-4" />
+          </div>
+        ) : (
+          <aside className="w-72 lg:w-80 border-r border-slate-800/80 bg-[#0b0f19] flex flex-col shrink-0 transition-all">
+            <div className="p-4 border-b border-slate-800/80 flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                  <Layers className="w-3.5 h-3.5 text-cyan-400" />
+                  Target Subsystem
+                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-mono text-cyan-400 bg-cyan-950/60 px-2 py-0.5 rounded-full border border-cyan-800/40">
+                    {analysis?.modules.length || 0} detected
+                  </span>
+                  <button
+                    onClick={() => setShowLeftSidebar(false)}
+                    className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
+                    title="Collapse Panel"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
-              {mode === "overview" && <Sparkles className="w-3.5 h-3.5 text-cyan-400" />}
-            </button>
 
-            {/* Search Input */}
-            <input
-              type="text"
-              placeholder="Filter modules..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-slate-900/80 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50"
-            />
-          </div>
-
-          {/* Module List */}
-          <div className="flex-1 overflow-y-auto p-3 space-y-1.5">
-            {filteredModules.map((m) => {
-              const isSelected = mode === "module" && selectedModuleId === m.id;
-
-              return (
-                <button
-                  key={m.id}
-                  onClick={() => {
-                    setSelectedModuleId(m.id);
-                    setMode("module");
-                  }}
-                  className={`w-full text-left p-2.5 rounded-xl border text-xs transition flex flex-col gap-1.5 ${
-                    isSelected
-                      ? "bg-indigo-600/15 border-indigo-500/40 text-white shadow-sm"
-                      : "bg-slate-900/40 border-slate-800/60 text-slate-400 hover:bg-slate-800/40 hover:text-slate-200"
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 font-semibold text-slate-200">
-                      <span
-                        className="w-2.5 h-2.5 rounded-full"
-                        style={{ backgroundColor: m.color }}
-                      />
-                      <span>{m.name}</span>
-                    </div>
-                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">
-                      {m.primaryLanguage}
-                    </span>
+              {/* Global Overview Radio Button */}
+              <button
+                onClick={() => setMode("overview")}
+                className={`w-full text-left p-3 rounded-xl border text-xs font-medium transition flex items-center justify-between ${
+                  mode === "overview"
+                    ? "bg-cyan-500/10 border-cyan-500/40 text-cyan-300 shadow-sm"
+                    : "bg-slate-900/60 border-slate-800 text-slate-400 hover:bg-slate-800/50 hover:text-slate-200"
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Film className="w-4 h-4 text-cyan-400" />
+                  <div>
+                    <div className="font-semibold text-white">Full Repository View</div>
+                    <div className="text-[10px] text-slate-400">4-Tier System Architecture</div>
                   </div>
+                </div>
+                {mode === "overview" && <Sparkles className="w-3.5 h-3.5 text-cyan-400" />}
+              </button>
 
-                  <div className="flex items-center justify-between text-[10px] font-mono text-slate-500 pl-4">
-                    <span>
-                      {m.fileCount} files • {m.loc} LOC
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <span className="flex items-center gap-0.5 text-emerald-400/80" title="Inbound callers">
-                        <ArrowDownLeft className="w-2.5 h-2.5" />
-                        {m.inboundDependencies.length}
-                      </span>
-                      <span className="flex items-center gap-0.5 text-cyan-400/80" title="Outbound dependencies">
-                        <ArrowUpRight className="w-2.5 h-2.5" />
-                        {m.outboundDependencies.length}
+              {/* Search Input */}
+              <input
+                type="text"
+                placeholder="Filter modules..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-slate-900/80 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50"
+              />
+            </div>
+
+            {/* Module List */}
+            <div className="flex-1 overflow-y-auto p-3 space-y-1.5">
+              {filteredModules.map((m) => {
+                const isSelected = mode === "module" && selectedModuleId === m.id;
+
+                return (
+                  <button
+                    key={m.id}
+                    onClick={() => {
+                      setSelectedModuleId(m.id);
+                      setMode("module");
+                    }}
+                    className={`w-full text-left p-2.5 rounded-xl border text-xs transition flex flex-col gap-1.5 ${
+                      isSelected
+                        ? "bg-indigo-600/15 border-indigo-500/40 text-white shadow-sm"
+                        : "bg-slate-900/40 border-slate-800/60 text-slate-400 hover:bg-slate-800/40 hover:text-slate-200"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 font-semibold text-slate-200">
+                        <span
+                          className="w-2.5 h-2.5 rounded-full"
+                          style={{ backgroundColor: m.color }}
+                        />
+                        <span>{m.name}</span>
+                      </div>
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">
+                        {m.primaryLanguage}
                       </span>
                     </div>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </aside>
+
+                    <div className="flex items-center justify-between text-[10px] font-mono text-slate-500 pl-4">
+                      <span>
+                        {m.fileCount} files • {m.loc} LOC
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="flex items-center gap-0.5 text-emerald-400/80" title="Inbound callers">
+                          <ArrowDownLeft className="w-2.5 h-2.5" />
+                          {m.inboundDependencies.length}
+                        </span>
+                        <span className="flex items-center gap-0.5 text-cyan-400/80" title="Outbound dependencies">
+                          <ArrowUpRight className="w-2.5 h-2.5" />
+                          {m.outboundDependencies.length}
+                        </span>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </aside>
+        )}
 
         {/* Center Stage: Live Remotion Video Player OR Mermaid Diagram */}
-        <main className="flex-1 bg-[#070a10] flex flex-col items-center justify-center p-8 overflow-hidden relative">
+        <main className="flex-1 bg-[#070a10] flex flex-col items-center justify-center p-3 sm:p-5 overflow-hidden relative">
           {analysis ? (
             viewTab === "video" ? (
-              <div className="flex flex-col items-center justify-center w-full max-w-5xl">
+              <div className="flex flex-col items-center justify-center w-full h-full max-w-7xl">
                 {/* Player Frame */}
                 <div
-                  className="w-full relative rounded-2xl overflow-hidden border border-slate-800 shadow-2xl bg-black flex items-center justify-center"
+                  className="w-full relative rounded-2xl overflow-hidden border border-slate-800 shadow-2xl bg-black flex items-center justify-center transition-all"
                   style={{
                     aspectRatio: aspectRatio === "16:9" ? "16/9" : "9/16",
-                    maxHeight: aspectRatio === "16:9" ? "650px" : "680px",
+                    maxHeight: "calc(100vh - 120px)",
+                    maxWidth: "100%",
                   }}
                 >
                   {mode === "overview" ? (
@@ -387,47 +448,19 @@ export const App: React.FC = () => {
               </div>
             ) : (
               /* Mermaid Architecture Diagram View */
-              <div className="w-full max-w-4xl h-full flex flex-col justify-between py-4">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                      <Code2 className="w-5 h-5 text-cyan-400" />
-                      Mermaid Architecture Flowchart
-                    </h2>
-                    <p className="text-xs text-slate-400 mt-0.5">
-                      {mode === "overview"
-                        ? "Full 4-tier system flowchart ready to paste into README.md"
-                        : `Subsystem boundary diagram for [${activeModule?.name || "module"}]`}
-                    </p>
-                  </div>
-
-                  <button
-                    onClick={handleCopyMermaid}
-                    className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-white flex items-center gap-2 shadow-lg transition"
-                  >
-                    {copiedMermaid ? (
-                      <>
-                        <Check className="w-4 h-4 text-emerald-400" />
-                        <span className="text-emerald-300">Copied to Clipboard!</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-4 h-4 text-cyan-400" />
-                        <span>Copy Mermaid Code</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-
-                <div className="flex-1 bg-slate-950 border border-slate-800 rounded-2xl p-6 overflow-auto font-mono text-xs text-slate-300 selection:bg-cyan-500/30">
-                  <pre className="whitespace-pre">{mermaidMarkdown}</pre>
-                </div>
-
-                <div className="mt-4 p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-xs text-slate-400 flex items-center justify-between">
-                  <span>💡 Embed this directly into GitHub issues, PRs, or docs:</span>
-                  <code className="text-cyan-400 font-mono text-[11px]">```mermaid ... ```</code>
-                </div>
-              </div>
+              <MermaidViewer
+                chartText={mermaidMarkdown}
+                title={
+                  mode === "overview"
+                    ? "Full 4-Tier Architecture Flowchart"
+                    : `Subsystem Boundary: [${activeModule?.name || "Module"}]`
+                }
+                subtitle={
+                  mode === "overview"
+                    ? "Interactive visual diagram showing how your entire project connects"
+                    : `Visual map of inbound callers and outbound dependencies for ${activeModule?.name}`
+                }
+              />
             )
           ) : (
             <div className="text-center font-mono text-sm text-slate-500 flex flex-col items-center gap-3">
@@ -438,22 +471,49 @@ export const App: React.FC = () => {
         </main>
 
         {/* Right Sidebar: Inspector & Video Customization */}
-        <aside className="w-80 border-l border-slate-800/80 bg-[#0b0f19] flex flex-col shrink-0 p-5 space-y-6 overflow-y-auto">
-          {/* Controls Section */}
-          <div className="space-y-4">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-              <Sliders className="w-3.5 h-3.5 text-cyan-400" />
-              Styling & Audio
+        {!showRightSidebar ? (
+          <div className="w-12 border-l border-slate-800/80 bg-[#0b0f19] flex flex-col items-center py-4 shrink-0 justify-between transition-all">
+            <button
+              onClick={() => {
+                setShowRightSidebar(true);
+                setTheaterMode(false);
+              }}
+              className="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white transition"
+              title="Expand Controls Panel"
+            >
+              <ChevronLeft className="w-4 h-4 text-cyan-400" />
+            </button>
+            <span className="text-[10px] uppercase font-mono tracking-widest text-slate-500 [writing-mode:vertical-rl] rotate-180">
+              Styling & Controls
             </span>
-
-            {/* Audio Indicator */}
-            <div className="p-3 rounded-xl bg-cyan-950/40 border border-cyan-800/40 flex items-center gap-3 text-xs text-cyan-300 font-mono">
-              <Volume2 className="w-4 h-4 text-cyan-400 animate-pulse" />
-              <div>
-                <div className="font-bold">Ambient Cyber Audio</div>
-                <div className="text-[10px] text-cyan-400/70">Synced with step transitions</div>
+            <div className="w-1 h-4" />
+          </div>
+        ) : (
+          <aside className="w-72 lg:w-80 border-l border-slate-800/80 bg-[#0b0f19] flex flex-col shrink-0 p-5 space-y-6 overflow-y-auto transition-all">
+            {/* Controls Section */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                  <Sliders className="w-3.5 h-3.5 text-cyan-400" />
+                  Styling & Audio
+                </span>
+                <button
+                  onClick={() => setShowRightSidebar(false)}
+                  className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
+                  title="Collapse Panel"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
               </div>
-            </div>
+
+              {/* Audio Indicator */}
+              <div className="p-3 rounded-xl bg-cyan-950/40 border border-cyan-800/40 flex items-center gap-3 text-xs text-cyan-300 font-mono">
+                <Volume2 className="w-4 h-4 text-cyan-400 animate-pulse" />
+                <div>
+                  <div className="font-bold">Natural AI Voiceover</div>
+                  <div className="text-[10px] text-cyan-400/70">Kokoro TTS • Plain-English Narration</div>
+                </div>
+              </div>
 
             {/* Theme Preset */}
             <div>
@@ -575,6 +635,7 @@ export const App: React.FC = () => {
             </div>
           )}
         </aside>
+        )}
       </div>
     </div>
   );

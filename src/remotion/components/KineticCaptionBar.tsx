@@ -53,7 +53,7 @@ export const KineticCaptionBar: React.FC<KineticCaptionBarProps> = ({
       >
         {/* Step Indicator Badge */}
         <div
-          className="w-12 h-12 rounded-xl flex items-center justify-center text-base font-black text-[#0b1628] shrink-0 shadow-lg font-['Roboto',sans-serif]"
+          className="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black text-[#0b1628] shrink-0 shadow-xl font-['Roboto',sans-serif]"
           style={{ backgroundColor: accentColor }}
         >
           0{stepNumber}
@@ -61,20 +61,20 @@ export const KineticCaptionBar: React.FC<KineticCaptionBarProps> = ({
 
         {/* Dynamic Caption Body */}
         <div className="flex-1 font-['Roboto',sans-serif]">
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 mb-1.5">
             <span
-              className="text-[11px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full"
+              className="text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full"
               style={{
-                backgroundColor: `${accentColor}20`,
+                backgroundColor: `${accentColor}25`,
                 color: accentColor,
-                border: `1px solid ${accentColor}40`,
+                border: `1px solid ${accentColor}50`,
               }}
             >
               {title}
             </span>
           </div>
 
-          <p className="text-base leading-relaxed tracking-tight">
+          <p className="text-2xl font-bold leading-snug tracking-tight">
             {renderHighlightedWords()}
           </p>
         </div>

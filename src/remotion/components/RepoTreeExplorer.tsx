@@ -12,7 +12,6 @@ export const RepoTreeExplorer: React.FC<RepoTreeExplorerProps> = ({
   activeStepIndex,
   accentColor,
 }) => {
-  // Simplified directory structure mapped to the 4 steps
   const treeSections = [
     {
       step: 0,
@@ -55,54 +54,54 @@ export const RepoTreeExplorer: React.FC<RepoTreeExplorerProps> = ({
 
   return (
     <div
-      className="w-[380px] h-[520px] rounded-2xl border p-5 flex flex-col justify-between font-['Roboto',sans-serif] backdrop-blur-xl shadow-2xl transition-all"
+      className="w-[740px] h-[680px] rounded-3xl border p-8 flex flex-col justify-between font-['Roboto',sans-serif] backdrop-blur-2xl shadow-2xl transition-all"
       style={{
-        backgroundColor: "rgba(11, 22, 40, 0.92)",
-        borderColor: "rgba(255, 255, 255, 0.12)",
+        backgroundColor: "rgba(11, 22, 40, 0.95)",
+        borderColor: "rgba(255, 255, 255, 0.15)",
       }}
     >
       {/* Explorer Header */}
       <div>
-        <div className="flex items-center justify-between pb-3 border-b border-white/10">
-          <div className="flex items-center gap-2">
-            <span className="text-base">📁</span>
-            <span className="text-xs font-bold uppercase tracking-wider text-white">
+        <div className="flex items-center justify-between pb-4 border-b border-white/10">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">📁</span>
+            <span className="text-lg font-black uppercase tracking-wider text-white">
               Project File Explorer
             </span>
           </div>
-          <span className="text-[10px] text-white/40 font-mono">where things live</span>
+          <span className="text-xs text-white/50 font-mono">where your code lives</span>
         </div>
       </div>
 
       {/* Directory Tree */}
-      <div className="my-3 space-y-2.5 flex-1 overflow-hidden">
+      <div className="my-4 space-y-3.5 flex-1 overflow-hidden">
         {treeSections.map((sec) => {
           const isActive = sec.step === activeStepIndex;
 
           return (
             <div
               key={sec.folder}
-              className={`rounded-xl p-3 border transition-all duration-300 ${
+              className={`rounded-2xl p-4 border transition-all duration-300 ${
                 isActive
-                  ? "bg-slate-900/90 shadow-lg scale-[1.02]"
-                  : "bg-white/[0.02] border-white/5 opacity-60"
+                  ? "bg-slate-900/98 shadow-2xl scale-[1.02]"
+                  : "bg-white/[0.02] border-white/5 opacity-55"
               }`}
               style={{
                 borderColor: isActive ? accentColor : "rgba(255, 255, 255, 0.08)",
-                boxShadow: isActive ? `0 0 25px ${accentColor}25` : "none",
+                boxShadow: isActive ? `0 0 35px ${accentColor}30` : "none",
               }}
             >
               {/* Folder Line */}
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 font-mono text-xs font-bold text-white">
-                  <span>{isActive ? "📂" : "📁"}</span>
+                <div className="flex items-center gap-3 font-mono text-2xl font-bold text-white">
+                  <span className="text-3xl">{isActive ? "📂" : "📁"}</span>
                   <span style={{ color: isActive ? accentColor : "#ffffff" }}>
                     {sec.folder}
                   </span>
                 </div>
                 {isActive && (
                   <span
-                    className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full text-black font-['Roboto',sans-serif]"
+                    className="text-xs font-black uppercase px-3.5 py-1 rounded-full text-black font-['Roboto',sans-serif] shadow-md"
                     style={{ backgroundColor: accentColor }}
                   >
                     Active Step
@@ -111,20 +110,20 @@ export const RepoTreeExplorer: React.FC<RepoTreeExplorerProps> = ({
               </div>
 
               {/* Purpose in Plain English */}
-              <p className="text-[10px] text-white/60 mt-1 pl-6 leading-tight">
+              <p className="text-base text-white/80 mt-1.5 pl-10 leading-snug">
                 {sec.purpose}
               </p>
 
               {/* Contained Files */}
               {isActive && (
-                <div className="mt-2 pl-6 space-y-1 font-mono text-[11px]">
+                <div className="mt-3 pl-10 space-y-2 font-mono">
                   {sec.files.map((f) => (
                     <div
                       key={f.name}
-                      className="flex items-center justify-between p-1.5 rounded bg-white/5 border border-white/5"
+                      className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10"
                     >
-                      <span className="text-white font-medium">📄 {f.name}</span>
-                      <span className="text-[9px] text-white/50">{f.desc}</span>
+                      <span className="text-white font-bold text-lg">📄 {f.name}</span>
+                      <span className="text-sm text-white/70">{f.desc}</span>
                     </div>
                   ))}
                 </div>
@@ -135,9 +134,9 @@ export const RepoTreeExplorer: React.FC<RepoTreeExplorerProps> = ({
       </div>
 
       {/* Footer Info */}
-      <div className="pt-2.5 border-t border-white/5 flex items-center justify-between text-[10px] text-white/40">
-        <span>Runs 100% on your laptop</span>
-        <span className="text-emerald-400 font-bold">Zero cloud uploads</span>
+      <div className="pt-3 border-t border-white/10 flex items-center justify-between text-sm text-white/50">
+        <span>Runs 100% locally on your machine</span>
+        <span className="text-emerald-400 font-bold text-base">✓ Zero cloud uploads</span>
       </div>
     </div>
   );
